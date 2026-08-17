@@ -5,25 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>JARVIS AI - Shivam Gupta</title>
   <style>
-    :root {
-      --neon-green: #00ff88;
-      --glow: rgba(0, 255, 136, 0.4);
-      --bg: #030a07;
-      --card: #071c13;
-    }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: Arial, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at center, #062217 0%, var(--bg) 100%);
-      color: var(--neon-green);
+      background-color: #030a07;
+      background: radial-gradient(circle at center, #062217 0%, #030a07 100%);
+      color: #00ff88;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -51,32 +45,29 @@
 
     .battery-box {
       font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      font-weight: bold;
     }
 
     .main-title {
       font-size: 1.4rem;
-      font-weight: 900;
+      font-weight: bold;
       letter-spacing: 3px;
-      text-shadow: 0 0 10px var(--neon-green);
+      text-shadow: 0 0 10px #00ff88;
     }
 
     .gear-button {
-      background: rgba(0, 255, 136, 0.1);
-      border: 1px solid var(--neon-green);
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid #00ff88;
       border-radius: 50%;
       width: 44px;
       height: 44px;
-      color: var(--neon-green);
+      color: #00ff88;
       font-size: 1.4rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 10px var(--glow);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
     }
 
     .clock-container {
@@ -85,15 +76,15 @@
     }
 
     #clock-text {
-      font-size: 2.1rem;
-      font-weight: 800;
+      font-size: 2.2rem;
+      font-weight: bold;
       letter-spacing: 2px;
     }
 
     #date-text {
       font-size: 0.95rem;
       opacity: 0.85;
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
     .reactor-box {
@@ -110,8 +101,8 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      border: 2px dashed var(--neon-green);
-      box-shadow: 0 0 15px var(--glow);
+      border: 2px dashed #00ff88;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
       animation: spin 16s linear infinite;
     }
 
@@ -134,7 +125,7 @@
       width: 125px;
       height: 125px;
       border-radius: 50%;
-      border: 2px solid var(--neon-green);
+      border: 2px solid #00ff88;
       background: radial-gradient(circle, rgba(0, 255, 136, 0.15) 0%, transparent 70%);
       animation: breathe 3s infinite ease-in-out;
     }
@@ -143,8 +134,8 @@
       width: 65px;
       height: 65px;
       border-radius: 50%;
-      background: radial-gradient(circle, #ffffff 0%, var(--neon-green) 60%, transparent 100%);
-      box-shadow: 0 0 30px var(--neon-green);
+      background: radial-gradient(circle, #ffffff 0%, #00ff88 60%, transparent 100%);
+      box-shadow: 0 0 30px #00ff88;
     }
 
     .speaking .center-core {
@@ -153,16 +144,16 @@
 
     #status-title {
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: bold;
       letter-spacing: 3px;
-      text-shadow: 0 0 8px var(--neon-green);
+      text-shadow: 0 0 8px #00ff88;
     }
 
     .output-box {
       width: 100%;
       max-height: 90px;
       background: rgba(2, 18, 12, 0.85);
-      border-left: 3px solid var(--neon-green);
+      border-left: 3px solid #00ff88;
       padding: 10px 14px;
       border-radius: 4px;
       overflow-y: auto;
@@ -171,14 +162,13 @@
 
     .core-tag {
       font-size: 0.75rem;
-      font-weight: 800;
+      font-weight: bold;
       letter-spacing: 2px;
       display: block;
     }
 
     #subtitle-text {
       font-size: 0.95rem;
-      font-weight: 500;
       color: #c9fce2;
       margin-top: 4px;
       line-height: 1.3;
@@ -192,52 +182,49 @@
       width: 100%;
       padding: 16px;
       background: transparent;
-      border: 2px solid var(--neon-green);
+      border: 2px solid #00ff88;
       border-radius: 40px;
       color: #ffffff;
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: bold;
       letter-spacing: 2px;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 0 15px var(--glow);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
       cursor: pointer;
     }
 
     .mic-button.listening {
       background: rgba(0, 255, 136, 0.25);
       border-color: #ffffff;
-      box-shadow: 0 0 30px var(--neon-green);
+      box-shadow: 0 0 30px #00ff88;
     }
 
-    /* DIALOG MODAL */
-    dialog {
-      margin: auto;
-      border: none;
-      background: transparent;
-      max-width: 440px;
-      width: 100%;
-      height: 85vh;
-      outline: none;
-    }
-
-    dialog::backdrop {
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(5px);
+    /* PURE CSS OVERLAY MODAL */
+    #settings-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 100000;
     }
 
     .modal-card {
       width: 100%;
-      height: 100%;
-      background: var(--card);
-      border: 2px solid var(--neon-green);
-      border-radius: 20px;
+      max-width: 440px;
+      height: 85vh;
+      background: #061a12;
+      border-top: 2px solid #00ff88;
+      border-radius: 20px 20px 0 0;
       padding: 20px;
       display: flex;
       flex-direction: column;
-      color: var(--neon-green);
+      color: #00ff88;
+      box-shadow: 0 -10px 30px rgba(0, 255, 136, 0.2);
     }
 
     .modal-head {
@@ -251,7 +238,7 @@
     .modal-head button {
       background: none;
       border: none;
-      color: var(--neon-green);
+      color: #00ff88;
       font-size: 1.8rem;
       cursor: pointer;
     }
@@ -289,7 +276,7 @@
       width: 100%;
       padding: 11px;
       background: #020a06;
-      border: 1px solid var(--neon-green);
+      border: 1px solid #00ff88;
       color: #ffffff;
       border-radius: 6px;
       outline: none;
@@ -307,16 +294,16 @@
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; inset: 0; background: #333; border-radius: 26px; transition: .3s; }
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
-    input:checked + .slider { background: var(--neon-green); }
+    input:checked + .slider { background: #00ff88; }
     input:checked + .slider:before { transform: translateX(20px); }
 
     .save-btn {
       width: 100%;
       padding: 14px;
-      background: var(--neon-green);
+      background: #00ff88;
       border: none;
       color: #000000;
-      font-weight: 800;
+      font-weight: bold;
       border-radius: 8px;
       cursor: pointer;
       margin-top: 10px;
@@ -325,19 +312,18 @@
 
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes breathe { 0%, 100% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
-    @keyframes talkPulse { 0% { transform: scale(0.9); box-shadow: 0 0 15px var(--neon-green); } 100% { transform: scale(1.25); box-shadow: 0 0 45px #ffffff; } }
+    @keyframes talkPulse { 0% { transform: scale(0.9); box-shadow: 0 0 15px #00ff88; } 100% { transform: scale(1.25); box-shadow: 0 0 45px #ffffff; } }
   </style>
 </head>
 <body>
 
-  <!-- MAIN APPLICATION -->
   <div id="app">
     <div class="top-bar">
       <div class="battery-box">
         ⚡ <span id="bat-val">--%</span>
       </div>
       <h1 class="main-title">JARVIS AI</h1>
-      <button class="gear-button" id="gear-btn" onclick="openSettings()">⚙</button>
+      <button class="gear-button" onclick="openSettings()">⚙</button>
     </div>
 
     <div class="clock-container">
@@ -370,8 +356,8 @@
     </div>
   </div>
 
-  <!-- NATIVE SETTINGS DIALOG -->
-  <dialog id="settings-dialog">
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal">
     <div class="modal-card">
       <div class="modal-head">
         <h3>SYSTEM CONFIGURATION</h3>
@@ -433,10 +419,9 @@
         <button class="save-btn" onclick="saveSettings()">SAVE CONFIGURATION</button>
       </div>
     </div>
-  </dialog>
+  </div>
 
   <script>
-    // 1. STATE & STORAGE
     function loadConfig() {
       return {
         groqKey: localStorage.getItem("j_groq") || "",
@@ -447,23 +432,21 @@
       };
     }
 
-    // 2. CLOCK & LIVE DATE
     function updateLiveClock() {
-      const now = new Date();
-      const timeEl = document.getElementById("clock-text");
-      const dateEl = document.getElementById("date-text");
+      var now = new Date();
+      var timeEl = document.getElementById("clock-text");
+      var dateEl = document.getElementById("date-text");
       if (timeEl) timeEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
       if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
     }
     updateLiveClock();
     setInterval(updateLiveClock, 1000);
 
-    // 3. HARDWARE BATTERY SYNC
     function updateBattery() {
-      if (navigator.getBattery) {
+      if (typeof navigator !== "undefined" && navigator.getBattery) {
         navigator.getBattery().then(function(b) {
           function setLevel() {
-            const batEl = document.getElementById("bat-val");
+            var batEl = document.getElementById("bat-val");
             if (batEl) batEl.innerText = Math.round(b.level * 100) + "%";
           }
           setLevel();
@@ -477,29 +460,26 @@
     }
     updateBattery();
 
-    // 4. DIALOG CONTROLS
-    const modal = document.getElementById("settings-dialog");
-
     function openSettings() {
-      const cfg = loadConfig();
+      var cfg = loadConfig();
       document.getElementById("groq-key-input").value = cfg.groqKey;
       document.getElementById("yt-key-input").value = cfg.ytKey;
       document.getElementById("voice-persona-input").value = cfg.voice;
       document.getElementById("gf-mode-input").checked = cfg.gfMode;
       document.getElementById("auto-listen-input").checked = cfg.autoListen;
-      modal.showModal();
+      document.getElementById("settings-modal").style.display = "flex";
     }
 
     function closeSettings() {
-      modal.close();
+      document.getElementById("settings-modal").style.display = "none";
     }
 
     function saveSettings() {
-      const g = document.getElementById("groq-key-input").value.trim();
-      const y = document.getElementById("yt-key-input").value.trim();
-      const v = document.getElementById("voice-persona-input").value;
-      const gf = document.getElementById("gf-mode-input").checked;
-      const al = document.getElementById("auto-listen-input").checked;
+      var g = document.getElementById("groq-key-input").value.trim();
+      var y = document.getElementById("yt-key-input").value.trim();
+      var v = document.getElementById("voice-persona-input").value;
+      var gf = document.getElementById("gf-mode-input").checked;
+      var al = document.getElementById("auto-listen-input").checked;
 
       localStorage.setItem("j_groq", g);
       localStorage.setItem("j_yt", y);
@@ -511,9 +491,8 @@
       speak(gf ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
     }
 
-    // 5. SPEECH RECOGNITION (MIC)
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
+    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = null;
 
     if (SpeechRec) {
       recognition = new SpeechRec();
@@ -530,7 +509,7 @@
       recognition.onresult = function(e) {
         document.getElementById("mic-btn").classList.remove("listening");
         document.getElementById("mic-text").innerText = "WAKE UP & TALK";
-        const transcript = e.results[0][0].transcript.trim();
+        var transcript = e.results[0][0].transcript.trim();
         document.getElementById("subtitle-text").innerText = 'You: "' + transcript + '"';
         handleCommand(transcript);
       };
@@ -550,40 +529,35 @@
       }
     }
 
-    // 6. COMMAND EXECUTION
     function handleCommand(cmd) {
-      const lower = cmd.toLowerCase();
-      const cfg = loadConfig();
+      var lower = cmd.toLowerCase();
+      var cfg = loadConfig();
       document.getElementById("status-title").innerText = "PROCESSING...";
 
-      // Ashish Easter Egg
       if (lower.includes("ashish") || lower.includes("आशीष")) {
-        const reply = "Haan Boss, main Ashish ko ache se janti hoon. Aur Boss kya aapko pata hai Ashish ki girlfriend ka naam Ziya hai, aur Ziya ke papa SDM hain. Kya Ashish ne aapko nahi bataya ki uska crush bohot si ladkiyon par hai? Aur uski ek bestie bhi hai jiska naam Hifza hai. Hifza Ashish ko bohot manti hai aur usko sweet, mithai, cake aur chicken khilati hai.";
+        var reply = "Haan Boss, main Ashish ko ache se janti hoon. Aur Boss kya aapko pata hai Ashish ki girlfriend ka naam Ziya hai, aur Ziya ke papa SDM hain. Kya Ashish ne aapko nahi bataya ki uska crush bohot si ladkiyon par hai? Aur uski ek bestie bhi hai jiska naam Hifza hai. Hifza Ashish ko bohot manti hai aur usko sweet, mithai, cake aur chicken khilati hai.";
         speak(reply);
         return;
       }
 
-      // Creator Question
       if (lower.includes("tumhe kisne banaya") || lower.includes("who created you") || lower.includes("kaun banaya") || lower.includes("किसने बनाया")) {
         speak("Mujhe Shivam Boss ne banaya hai, HTML, CSS aur JavaScript ka use karke!");
         return;
       }
 
-      // Time / Date
       if (lower.includes("time") || lower.includes("samay") || lower.includes("kitna bja") || lower.includes("समय") || lower.includes("टाइम") || lower.includes("date") || lower.includes("tarikh")) {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        var now = new Date();
+        var timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
         speak("Boss, abhi time hai " + timeStr);
         return;
       }
 
-      // YouTube Instant Search & Play
-      const isYouTube = /play|gana|gaana|song|sunao|baja|bajaao|chalao|kholo|open|youtube|यूट्यूब|गाना|सॉन्ग|सॉन्ग्स|चलाओ|बजाओ|सुनाओ|प्ले/i.test(cmd);
+      var isYouTube = /play|gana|gaana|song|sunao|baja|bajaao|chalao|kholo|open|youtube|यूट्यूब|गाना|सॉन्ग|सॉन्ग्स|चलाओ|बजाओ|सुनाओ|प्ले/i.test(cmd);
       if (isYouTube) {
-        let cleanSong = cmd.replace(/jarvis|जार्विस|play|प्ले|gana|गाना|gaana|bajaao|बजाओ|baja|sunao|सुनाओ|song|सॉन्ग|chalao|चलाओ|kalyani|youtube|यूट्यूब|kholo|खोलो|open|ओपन|on|pe|par|me|mein/gi, "").trim();
+        var cleanSong = cmd.replace(/jarvis|जार्विस|play|प्ले|gana|गाना|gaana|bajaao|बजाओ|baja|sunao|सुनाओ|song|सॉन्ग|chalao|चलाओ|kalyani|youtube|यूट्यूब|kholo|खोलो|open|ओपन|on|pe|par|me|mein/gi, "").trim();
         if (!cleanSong) cleanSong = "Trending Bollywood Songs";
 
-        const reply = cfg.gfMode 
+        var reply = cfg.gfMode 
           ? "Haan Shivam, main aapke liye " + cleanSong + " YouTube par chala rahi hoon." 
           : "Opening YouTube and playing " + cleanSong + ", Sir.";
         
@@ -592,26 +566,23 @@
         return;
       }
 
-      // WhatsApp
       if (lower.includes("whatsapp") || lower.includes("chat") || lower.includes("message") || lower.includes("व्हाट्सएप")) {
-        const reply = cfg.gfMode ? "Shivam, WhatsApp open kar rahi hoon." : "Opening WhatsApp, Sir.";
+        var reply = cfg.gfMode ? "Shivam, WhatsApp open kar rahi hoon." : "Opening WhatsApp, Sir.";
         speak(reply);
         window.location.href = "whatsapp://";
         return;
       }
 
-      // Call
       if (lower.includes("call") || lower.includes("phone") || lower.includes("dial") || lower.includes("कॉल")) {
-        const digits = lower.match(/\d+/);
-        const telNumber = digits ? digits[0] : "";
+        var digits = lower.match(/\d+/);
+        var telNumber = digits ? digits[0] : "";
         speak(telNumber ? "Calling " + telNumber + ", Sir." : "Opening dialer pad, Sir.");
         window.location.href = telNumber ? "tel:" + telNumber : "tel:";
         return;
       }
 
-      // Groq AI
       if (cfg.groqKey) {
-        let sys = "You are JARVIS, an advanced AI created by Shivam Gupta. Answer crisply and short in natural Hinglish.";
+        var sys = "You are JARVIS, an advanced AI created by Shivam Gupta. Answer crisply and short in natural Hinglish.";
         if (cfg.gfMode) {
           sys = "You are Shivam's sweet caring girlfriend. Call him Shivam with love. Reply in sweet, romantic short Hinglish.";
         }
@@ -631,15 +602,34 @@
             temperature: 0.7,
             max_tokens: 150
           })
-        }).then(res => res.json())
-          .then(data => {
+        }).then(function(res) { return res.json(); })
+          .then(function(data) {
             if (data.choices && data.choices[0]) {
               speak(data.choices[0].message.content);
             } else {
               speak("Groq API error. Check key in settings.");
             }
-          }).catch(() => {
+          }).catch(function() {
             speak("AI servers connect nahi ho pa rahe hain.");
           });
       } else {
-        speak("Boss, Settings icon par click karke apni Groq API Key save kar 
+        speak("Boss, Settings icon par click karke apni Groq API Key save kar lijiye.");
+      }
+    }
+
+    function speak(text) {
+      var cfg = loadConfig();
+      window.speechSynthesis.cancel();
+      var utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 1.0;
+      utter.pitch = (cfg.gfMode || cfg.voice === "female" || cfg.voice === "girl") ? 1.25 : 0.9;
+      utter.lang = "hi-IN";
+
+      utter.onstart = function() {
+        document.getElementById("reactor-el").classList.add("speaking");
+        document.getElementById("status-title").innerText = "JARVIS SPEAKING";
+      };
+
+      utter.onend = function() {
+        document.getElementById("reactor-el").classList.remove("speaking");
+        document.getElementById("status-title").innerText
