@@ -17,7 +17,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -29,10 +29,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    /* 1. AUTO DISMISSED LOADER */
+    /* 1. AUTO DESTROY LOADER */
     #loader-screen {
       position: fixed;
       inset: 0;
@@ -42,7 +42,7 @@
       align-items: center;
       z-index: 9999;
       pointer-events: none;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease;
     }
 
     .loader-content {
@@ -119,7 +119,7 @@
       height: 100%;
       background: var(--primary-green);
       box-shadow: 0 0 10px var(--primary-green);
-      transition: width 0.1s linear;
+      animation: fillBar 0.5s forwards ease-in-out;
     }
 
     .created-tag {
@@ -430,6 +430,7 @@
       font-size: 1rem;
     }
 
+    @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
     @keyframes spinRing { 100% { transform: rotate(360deg); } }
     @keyframes pulseCore { 0%, 100% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
     @keyframes reactorZoom { 0% { transform: scale(0.9); box-shadow: 0 0 20px var(--primary-green); } 100% { transform: scale(1.25); box-shadow: 0 0 50px #ffffff; } }
@@ -437,7 +438,7 @@
 </head>
 <body>
 
-  <!-- LOADER -->
+  <!-- 1. BOOT SCREEN -->
   <div id="loader-screen">
     <div class="loader-content">
       <div class="hologram-spinner">
@@ -448,20 +449,20 @@
       <h2 class="glow-text">JARVIS AI SYSTEM</h2>
       <p class="sub-loader">INITIALIZING NEURAL NETWORK</p>
       <div class="progress-bar-container">
-        <div class="progress-bar" id="loader-progress"></div>
+        <div class="progress-bar"></div>
       </div>
       <span class="created-tag">Created by Shivam Gupta</span>
     </div>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- 2. MAIN APP -->
   <div id="app">
     <div class="top-bar">
       <div class="battery-status">
         ⚡ <span id="battery-level">--%</span>
       </div>
       <h1 class="main-title">JARVIS AI</h1>
-      <button class="settings-btn" id="gear-btn">⚙</button>
+      <button class="settings-btn" onclick="openSettingsModal()">⚙</button>
     </div>
 
     <div class="time-date-container">
@@ -489,18 +490,18 @@
     </div>
 
     <div class="action-footer">
-      <button id="voice-trigger-btn" class="glow-pill-button">
+      <button id="voice-trigger-btn" class="glow-pill-button" onclick="startMicRecognition()">
         🎤 <span id="btn-text">WAKE UP & TALK</span>
       </button>
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
+  <!-- 3. SETTINGS MODAL -->
   <div id="settings-modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>SYSTEM CONFIGURATION</h3>
-        <button id="close-modal-btn">✕</button>
+        <button onclick="closeSettingsModal()">✕</button>
       </div>
 
       <div class="modal-scroll-body">
@@ -520,6 +521,11 @@
         </div>
 
         <div class="config-card">
+          <label>ElevenLabs Voice API Key</label>
+          <input type="password" id="eleven-api-key" placeholder="xi-api-key-xxxxxxxx">
+        </div>
+
+        <div class="config-card">
           <label>Voice Persona</label>
           <select id="voice-gender-select">
             <option value="female">Friday (Female Realistic Voice)</option>
@@ -531,7 +537,7 @@
         <div class="config-toggle-item">
           <div>
             <h4>GF Mode (Sweet Talk)</h4>
-            <p>Romantic and caring sweet replies</p>
+            <p>Romantic and sweet replies</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="gf-mode-toggle">
@@ -552,136 +558,107 @@
 
         <div class="config-card about-card">
           <h4>About Jarvis Assistant</h4>
-          <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, direct dialer calling, YouTube music search aur smart replies provide karta hai.</p>
+          <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, calling, YouTube songs play aur smart chat provide karta hai.</p>
         </div>
 
-        <button class="save-settings-btn" id="save-config-btn">SAVE CONFIGURATION</button>
+        <button class="save-settings-btn" onclick="saveSettingsModal()">SAVE CONFIGURATION</button>
       </div>
     </div>
   </div>
 
-  <!-- SCRIPT -->
   <script>
-    // 1. CONFIGURATION
-    var CONFIG = {
-      groqKey: localStorage.getItem("jarvis_groq_key") || "",
-      ytKey: localStorage.getItem("jarvis_yt_key") || "",
-      voiceGender: localStorage.getItem("jarvis_voice") || "female",
-      gfMode: localStorage.getItem("jarvis_gf_mode") === "true",
-      autoListen: localStorage.getItem("jarvis_auto_listen") === "true"
-    };
-
-    // 2. LIVE CLOCK & DATE (INSTANT FIRING)
+    // 1. REAL LIVE CLOCK & DATE
     function runLiveClock() {
       var now = new Date();
-      var timeEl = document.getElementById("live-time");
-      var dateEl = document.getElementById("live-date");
-      if (timeEl) {
-        timeEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
-      }
-      if (dateEl) {
-        dateEl.innerText = now.toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-      }
+      var t = document.getElementById("live-time");
+      var d = document.getElementById("live-date");
+      if (t) t.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+      if (d) d.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
     }
     runLiveClock();
     setInterval(runLiveClock, 1000);
 
-    // 3. ACCURATE LIVE BATTERY
-    function initBattery() {
-      if (navigator.getBattery) {
-        navigator.getBattery().then(function(battery) {
-          function updateLevel() {
-            var el = document.getElementById("battery-level");
-            if (el) el.innerText = Math.round(battery.level * 100) + "%";
+    // 2. ACCURATE HARDWARE BATTERY SYNC
+    (function syncBattery() {
+      if (typeof navigator !== "undefined" && navigator.getBattery) {
+        navigator.getBattery().then(function(b) {
+          function setB() {
+            var bEl = document.getElementById("battery-level");
+            if (bEl) bEl.innerText = Math.round(b.level * 100) + "%";
           }
-          updateLevel();
-          battery.addEventListener('levelchange', updateLevel);
+          setB();
+          b.addEventListener('levelchange', setB);
         }).catch(function() {
-          var el = document.getElementById("battery-level");
-          if (el) el.innerText = "100%";
+          var bEl = document.getElementById("battery-level");
+          if (bEl) bEl.innerText = "100%";
         });
       } else {
-        var el = document.getElementById("battery-level");
-        if (el) el.innerText = "90%";
+        var bEl = document.getElementById("battery-level");
+        if (bEl) bEl.innerText = "100%";
       }
-    }
-    initBattery();
+    })();
 
-    // 4. LOADER REMOVAL GUARANTEED
-    var loadProg = document.getElementById("loader-progress");
-    var loaderEl = document.getElementById("loader-screen");
-    var curProgress = 0;
-    var loadInterval = setInterval(function() {
-      curProgress += 25;
-      if (loadProg) loadProg.style.width = curProgress + "%";
-      if (curProgress >= 100) {
-        clearInterval(loadInterval);
+    // 3. AUTO DISMISS LOADER
+    setTimeout(function() {
+      var l = document.getElementById("loader-screen");
+      if (l) {
+        l.style.opacity = "0";
         setTimeout(function() {
-          if (loaderEl) {
-            loaderEl.style.opacity = "0";
-            setTimeout(function() {
-              if (loaderEl.parentNode) loaderEl.parentNode.removeChild(loaderEl);
-            }, 400);
-          }
-        }, 150);
+          if (l.parentNode) l.parentNode.removeChild(l);
+        }, 400);
       }
-    }, 60);
+    }, 600);
 
-    // 5. MODAL CONTROLS
-    var gearBtn = document.getElementById("gear-btn");
-    var closeBtn = document.getElementById("close-modal-btn");
-    var saveBtn = document.getElementById("save-config-btn");
-    var modalEl = document.getElementById("settings-modal");
-
-    if (gearBtn) {
-      gearBtn.addEventListener("click", function() {
-        document.getElementById("groq-api-key").value = CONFIG.groqKey;
-        document.getElementById("yt-api-key").value = CONFIG.ytKey;
-        document.getElementById("voice-gender-select").value = CONFIG.voiceGender;
-        document.getElementById("gf-mode-toggle").checked = CONFIG.gfMode;
-        document.getElementById("auto-listen-toggle").checked = CONFIG.autoListen;
-        modalEl.style.display = "flex";
-      });
+    // 4. CONFIG STATE
+    function getConfig() {
+      return {
+        groqKey: localStorage.getItem("jarvis_groq_key") || "",
+        ytKey: localStorage.getItem("jarvis_yt_key") || "",
+        elevenKey: localStorage.getItem("jarvis_eleven_key") || "",
+        voiceGender: localStorage.getItem("jarvis_voice") || "female",
+        gfMode: localStorage.getItem("jarvis_gf_mode") === "true",
+        autoListen: localStorage.getItem("jarvis_auto_listen") === "true"
+      };
     }
 
-    if (closeBtn) {
-      closeBtn.addEventListener("click", function() {
-        modalEl.style.display = "none";
-      });
+    // 5. MODAL OPEN/CLOSE
+    function openSettingsModal() {
+      var cfg = getConfig();
+      document.getElementById("groq-api-key").value = cfg.groqKey;
+      document.getElementById("yt-api-key").value = cfg.ytKey;
+      document.getElementById("eleven-api-key").value = cfg.elevenKey;
+      document.getElementById("voice-gender-select").value = cfg.voiceGender;
+      document.getElementById("gf-mode-toggle").checked = cfg.gfMode;
+      document.getElementById("auto-listen-toggle").checked = cfg.autoListen;
+      document.getElementById("settings-modal").style.display = "flex";
     }
 
-    if (saveBtn) {
-      saveBtn.addEventListener("click", function() {
-        CONFIG.groqKey = document.getElementById("groq-api-key").value.trim();
-        CONFIG.ytKey = document.getElementById("yt-api-key").value.trim();
-        CONFIG.voiceGender = document.getElementById("voice-gender-select").value;
-        CONFIG.gfMode = document.getElementById("gf-mode-toggle").checked;
-        CONFIG.autoListen = document.getElementById("auto-listen-toggle").checked;
+    function closeSettingsModal() {
+      document.getElementById("settings-modal").style.display = "none";
+    }
 
-        localStorage.setItem("jarvis_groq_key", CONFIG.groqKey);
-        localStorage.setItem("jarvis_yt_key", CONFIG.ytKey);
-        localStorage.setItem("jarvis_voice", CONFIG.voiceGender);
-        localStorage.setItem("jarvis_gf_mode", CONFIG.gfMode);
-        localStorage.setItem("jarvis_auto_listen", CONFIG.autoListen);
+    function saveSettingsModal() {
+      var g = document.getElementById("groq-api-key").value.trim();
+      var y = document.getElementById("yt-api-key").value.trim();
+      var el = document.getElementById("eleven-api-key").value.trim();
+      var v = document.getElementById("voice-gender-select").value;
+      var gf = document.getElementById("gf-mode-toggle").checked;
+      var al = document.getElementById("auto-listen-toggle").checked;
 
-        modalEl.style.display = "none";
-        speakResponse(CONFIG.gfMode ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
-      });
+      localStorage.setItem("jarvis_groq_key", g);
+      localStorage.setItem("jarvis_yt_key", y);
+      localStorage.setItem("jarvis_eleven_key", el);
+      localStorage.setItem("jarvis_voice", v);
+      localStorage.setItem("jarvis_gf_mode", gf);
+      localStorage.setItem("jarvis_auto_listen", al);
+
+      closeSettingsModal();
+      speakResponse(gf ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
     }
 
     // 6. SPEECH RECOGNITION (MIC)
     var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     var recognition = null;
-    var micBtn = document.getElementById("voice-trigger-btn");
-    var btnTxt = document.getElementById("btn-text");
-    var statusH = document.getElementById("jarvis-status-header");
-    var subTxt = document.getElementById("system-subtitle");
-    var reactorWrap = document.querySelector(".reactor-wrapper");
 
     if (SpeechRec) {
       recognition = new SpeechRec();
@@ -689,14 +666,29 @@
       recognition.continuous = false;
 
       recognition.onstart = function() {
-        if (micBtn) micBtn.classList.add("listening");
-        if (btnTxt) btnTxt.innerText = "LISTENING...";
-        if (statusH) statusH.innerText = "JARVIS LISTENING";
-        if (subTxt) subTxt.innerText = "Listening to your voice...";
+        var btn = document.getElementById("voice-trigger-btn");
+        var txt = document.getElementById("btn-text");
+        var st = document.getElementById("jarvis-status-header");
+        var sub = document.getElementById("system-subtitle");
+        if (btn) btn.classList.add("listening");
+        if (txt) txt.innerText = "LISTENING...";
+        if (st) st.innerText = "JARVIS LISTENING";
+        if (sub) sub.innerText = "Listening to your voice...";
       };
 
       recognition.onresult = function(e) {
-        if (micBtn) micBtn.classList.remove("listening");
-        if (btnTxt) btnTxt.innerText = "WAKE UP & TALK";
+        var btn = document.getElementById("voice-trigger-btn");
+        var txt = document.getElementById("btn-text");
+        var sub = document.getElementById("system-subtitle");
+        if (btn) btn.classList.remove("listening");
+        if (txt) txt.innerText = "WAKE UP & TALK";
         var transcript = e.results[0][0].transcript.trim();
-        if (subT
+        if (sub) sub.innerText = 'You: "' + transcript + '"';
+        handleCommands(transcript);
+      };
+
+      recognition.onerror = function() {
+        var btn = document.getElementById("voice-trigger-btn");
+        var txt = document.getElementById("btn-text");
+        var st = document.getElementById("jarvis-status-header");
+ 
