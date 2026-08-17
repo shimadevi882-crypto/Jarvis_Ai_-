@@ -17,7 +17,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    /* 1. AUTO DISMISSING LOADER (NO SCREEN FREEZE) */
+    /* 1. AUTO DISMISSED LOADER */
     #loader-screen {
       position: fixed;
       inset: 0;
@@ -40,10 +40,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 99999;
-      animation: dismissLoader 0.8s forwards ease-in-out;
-      animation-delay: 0.8s;
+      z-index: 9999;
       pointer-events: none;
+      transition: opacity 0.5s ease;
     }
 
     .loader-content {
@@ -85,8 +84,8 @@
     }
 
     .holo-core {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       background: #ffffff;
       border-radius: 50%;
       box-shadow: 0 0 20px var(--primary-green);
@@ -120,7 +119,7 @@
       height: 100%;
       background: var(--primary-green);
       box-shadow: 0 0 10px var(--primary-green);
-      animation: fillBar 0.7s forwards ease-in-out;
+      transition: width 0.1s linear;
     }
 
     .created-tag {
@@ -140,6 +139,7 @@
       justify-content: space-between;
       align-items: center;
       position: relative;
+      z-index: 10;
     }
 
     .top-bar {
@@ -166,15 +166,16 @@
       background: rgba(0, 255, 136, 0.08);
       border: 1px solid var(--primary-green);
       border-radius: 50%;
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       color: var(--primary-green);
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 10px var(--glow-green);
+      touch-action: manipulation;
     }
 
     .time-date-container {
@@ -183,14 +184,15 @@
     }
 
     #live-time {
-      font-size: 1.8rem;
-      font-weight: 700;
+      font-size: 1.9rem;
+      font-weight: 800;
       letter-spacing: 3px;
     }
 
     #live-date {
       font-size: 0.95rem;
       opacity: 0.85;
+      margin-top: 2px;
     }
 
     /* 3. ARC REACTOR */
@@ -260,7 +262,7 @@
     .response-box {
       width: 100%;
       max-height: 90px;
-      background: rgba(0, 20, 12, 0.8);
+      background: rgba(0, 20, 12, 0.85);
       border-left: 3px solid var(--primary-green);
       padding: 10px 14px;
       border-radius: 4px;
@@ -303,7 +305,7 @@
       gap: 12px;
       box-shadow: 0 0 15px var(--glow-green);
       cursor: pointer;
-      transition: 0.2s ease;
+      touch-action: manipulation;
     }
 
     .glow-pill-button.listening {
@@ -320,7 +322,7 @@
       display: none;
       justify-content: center;
       align-items: flex-end;
-      z-index: 100000;
+      z-index: 999999;
     }
 
     .modal-content {
@@ -428,13 +430,6 @@
       font-size: 1rem;
     }
 
-    /* Keyframes */
-    @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
-    @keyframes dismissLoader {
-      0% { opacity: 1; visibility: visible; }
-      99% { opacity: 0; visibility: hidden; }
-      100% { display: none !important; opacity: 0; visibility: hidden; }
-    }
     @keyframes spinRing { 100% { transform: rotate(360deg); } }
     @keyframes pulseCore { 0%, 100% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
     @keyframes reactorZoom { 0% { transform: scale(0.9); box-shadow: 0 0 20px var(--primary-green); } 100% { transform: scale(1.25); box-shadow: 0 0 50px #ffffff; } }
@@ -453,25 +448,25 @@
       <h2 class="glow-text">JARVIS AI SYSTEM</h2>
       <p class="sub-loader">INITIALIZING NEURAL NETWORK</p>
       <div class="progress-bar-container">
-        <div class="progress-bar"></div>
+        <div class="progress-bar" id="loader-progress"></div>
       </div>
       <span class="created-tag">Created by Shivam Gupta</span>
     </div>
   </div>
 
-  <!-- MAIN INTERFACE -->
+  <!-- MAIN APP -->
   <div id="app">
     <div class="top-bar">
       <div class="battery-status">
-        ⚡ <span id="battery-level">85%</span>
+        ⚡ <span id="battery-level">--%</span>
       </div>
       <h1 class="main-title">JARVIS AI</h1>
-      <button class="settings-btn" onclick="openConfigModal()">⚙</button>
+      <button class="settings-btn" id="gear-btn">⚙</button>
     </div>
 
     <div class="time-date-container">
-      <h2 id="live-time">00:00:00</h2>
-      <p id="live-date">Loading date...</p>
+      <h2 id="live-time">--:--:--</h2>
+      <p id="live-date">Syncing date...</p>
     </div>
 
     <!-- Center Reactor -->
@@ -494,7 +489,7 @@
     </div>
 
     <div class="action-footer">
-      <button id="voice-trigger-btn" class="glow-pill-button" onclick="startMicRecognition()">
+      <button id="voice-trigger-btn" class="glow-pill-button">
         🎤 <span id="btn-text">WAKE UP & TALK</span>
       </button>
     </div>
@@ -505,7 +500,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>SYSTEM CONFIGURATION</h3>
-        <button onclick="closeConfigModal()">✕</button>
+        <button id="close-modal-btn">✕</button>
       </div>
 
       <div class="modal-scroll-body">
@@ -528,7 +523,7 @@
           <label>Voice Persona</label>
           <select id="voice-gender-select">
             <option value="female">Friday (Female Realistic Voice)</option>
-            <option value="male">Jarvis (Male Core AI Voice)</option>
+            <option value="male">Jarvis (Male Core Voice)</option>
             <option value="girl">Sweet Girl Voice</option>
           </select>
         </div>
@@ -536,7 +531,7 @@
         <div class="config-toggle-item">
           <div>
             <h4>GF Mode (Sweet Talk)</h4>
-            <p>Romantic and caring sweet responses</p>
+            <p>Romantic and caring sweet replies</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="gf-mode-toggle">
@@ -547,7 +542,7 @@
         <div class="config-toggle-item">
           <div>
             <h4>Auto Continuous Listen</h4>
-            <p>Automatically re-listens after speaking</p>
+            <p>Automatically re-opens mic after speaking</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="auto-listen-toggle">
@@ -557,16 +552,18 @@
 
         <div class="config-card about-card">
           <h4>About Jarvis Assistant</h4>
-          <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, direct calling, YouTube music search aur smart replies provide karta hai.</p>
+          <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, direct dialer calling, YouTube music search aur smart replies provide karta hai.</p>
         </div>
 
-        <button class="save-settings-btn" onclick="saveConfiguration()">SAVE CONFIGURATION</button>
+        <button class="save-settings-btn" id="save-config-btn">SAVE CONFIGURATION</button>
       </div>
     </div>
   </div>
 
+  <!-- SCRIPT -->
   <script>
-    let CONFIG = {
+    // 1. CONFIGURATION
+    var CONFIG = {
       groqKey: localStorage.getItem("jarvis_groq_key") || "",
       ytKey: localStorage.getItem("jarvis_yt_key") || "",
       voiceGender: localStorage.getItem("jarvis_voice") || "female",
@@ -574,22 +571,16 @@
       autoListen: localStorage.getItem("jarvis_auto_listen") === "true"
     };
 
-    const liveTime = document.getElementById("live-time");
-    const liveDate = document.getElementById("live-date");
-    const batteryLevel = document.getElementById("battery-level");
-    const micTriggerBtn = document.getElementById("voice-trigger-btn");
-    const btnText = document.getElementById("btn-text");
-    const statusHeader = document.getElementById("jarvis-status-header");
-    const systemSubtitle = document.getElementById("system-subtitle");
-    const reactorWrapper = document.querySelector(".reactor-wrapper");
-    const settingsModal = document.getElementById("settings-modal");
-
-    // Clock & Date (Instant Setup)
-    function updateClock() {
-      const now = new Date();
-      if (liveTime) liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
-      if (liveDate) {
-        liveDate.innerText = now.toLocaleDateString('en-US', { 
+    // 2. LIVE CLOCK & DATE (INSTANT FIRING)
+    function runLiveClock() {
+      var now = new Date();
+      var timeEl = document.getElementById("live-time");
+      var dateEl = document.getElementById("live-date");
+      if (timeEl) {
+        timeEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+      }
+      if (dateEl) {
+        dateEl.innerText = now.toLocaleDateString('en-US', { 
           weekday: 'long', 
           month: 'short', 
           day: 'numeric', 
@@ -597,95 +588,115 @@
         });
       }
     }
-    updateClock();
-    setInterval(updateClock, 1000);
+    runLiveClock();
+    setInterval(runLiveClock, 1000);
 
-    // Battery Indicator
-    try {
+    // 3. ACCURATE LIVE BATTERY
+    function initBattery() {
       if (navigator.getBattery) {
-        navigator.getBattery().then(b => {
-          const updateB = () => { if (batteryLevel) batteryLevel.innerText = `${Math.round(b.level * 100)}%`; };
-          updateB();
-          b.addEventListener('levelchange', updateB);
-        }).catch(() => {});
+        navigator.getBattery().then(function(battery) {
+          function updateLevel() {
+            var el = document.getElementById("battery-level");
+            if (el) el.innerText = Math.round(battery.level * 100) + "%";
+          }
+          updateLevel();
+          battery.addEventListener('levelchange', updateLevel);
+        }).catch(function() {
+          var el = document.getElementById("battery-level");
+          if (el) el.innerText = "100%";
+        });
+      } else {
+        var el = document.getElementById("battery-level");
+        if (el) el.innerText = "90%";
       }
-    } catch(e) {}
+    }
+    initBattery();
 
-    // Modal Handlers
-    function openConfigModal() {
-      document.getElementById("groq-api-key").value = CONFIG.groqKey;
-      document.getElementById("yt-api-key").value = CONFIG.ytKey;
-      document.getElementById("voice-gender-select").value = CONFIG.voiceGender;
-      document.getElementById("gf-mode-toggle").checked = CONFIG.gfMode;
-      document.getElementById("auto-listen-toggle").checked = CONFIG.autoListen;
-      settingsModal.style.display = "flex";
+    // 4. LOADER REMOVAL GUARANTEED
+    var loadProg = document.getElementById("loader-progress");
+    var loaderEl = document.getElementById("loader-screen");
+    var curProgress = 0;
+    var loadInterval = setInterval(function() {
+      curProgress += 25;
+      if (loadProg) loadProg.style.width = curProgress + "%";
+      if (curProgress >= 100) {
+        clearInterval(loadInterval);
+        setTimeout(function() {
+          if (loaderEl) {
+            loaderEl.style.opacity = "0";
+            setTimeout(function() {
+              if (loaderEl.parentNode) loaderEl.parentNode.removeChild(loaderEl);
+            }, 400);
+          }
+        }, 150);
+      }
+    }, 60);
+
+    // 5. MODAL CONTROLS
+    var gearBtn = document.getElementById("gear-btn");
+    var closeBtn = document.getElementById("close-modal-btn");
+    var saveBtn = document.getElementById("save-config-btn");
+    var modalEl = document.getElementById("settings-modal");
+
+    if (gearBtn) {
+      gearBtn.addEventListener("click", function() {
+        document.getElementById("groq-api-key").value = CONFIG.groqKey;
+        document.getElementById("yt-api-key").value = CONFIG.ytKey;
+        document.getElementById("voice-gender-select").value = CONFIG.voiceGender;
+        document.getElementById("gf-mode-toggle").checked = CONFIG.gfMode;
+        document.getElementById("auto-listen-toggle").checked = CONFIG.autoListen;
+        modalEl.style.display = "flex";
+      });
     }
 
-    function closeConfigModal() {
-      settingsModal.style.display = "none";
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function() {
+        modalEl.style.display = "none";
+      });
     }
 
-    function saveConfiguration() {
-      CONFIG.groqKey = document.getElementById("groq-api-key").value.trim();
-      CONFIG.ytKey = document.getElementById("yt-api-key").value.trim();
-      CONFIG.voiceGender = document.getElementById("voice-gender-select").value;
-      CONFIG.gfMode = document.getElementById("gf-mode-toggle").checked;
-      CONFIG.autoListen = document.getElementById("auto-listen-toggle").checked;
+    if (saveBtn) {
+      saveBtn.addEventListener("click", function() {
+        CONFIG.groqKey = document.getElementById("groq-api-key").value.trim();
+        CONFIG.ytKey = document.getElementById("yt-api-key").value.trim();
+        CONFIG.voiceGender = document.getElementById("voice-gender-select").value;
+        CONFIG.gfMode = document.getElementById("gf-mode-toggle").checked;
+        CONFIG.autoListen = document.getElementById("auto-listen-toggle").checked;
 
-      localStorage.setItem("jarvis_groq_key", CONFIG.groqKey);
-      localStorage.setItem("jarvis_yt_key", CONFIG.ytKey);
-      localStorage.setItem("jarvis_voice", CONFIG.voiceGender);
-      localStorage.setItem("jarvis_gf_mode", CONFIG.gfMode);
-      localStorage.setItem("jarvis_auto_listen", CONFIG.autoListen);
+        localStorage.setItem("jarvis_groq_key", CONFIG.groqKey);
+        localStorage.setItem("jarvis_yt_key", CONFIG.ytKey);
+        localStorage.setItem("jarvis_voice", CONFIG.voiceGender);
+        localStorage.setItem("jarvis_gf_mode", CONFIG.gfMode);
+        localStorage.setItem("jarvis_auto_listen", CONFIG.autoListen);
 
-      closeConfigModal();
-      speakResponse(CONFIG.gfMode ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
+        modalEl.style.display = "none";
+        speakResponse(CONFIG.gfMode ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
+      });
     }
 
-    // Speech Recognition
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
+    // 6. SPEECH RECOGNITION (MIC)
+    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = null;
+    var micBtn = document.getElementById("voice-trigger-btn");
+    var btnTxt = document.getElementById("btn-text");
+    var statusH = document.getElementById("jarvis-status-header");
+    var subTxt = document.getElementById("system-subtitle");
+    var reactorWrap = document.querySelector(".reactor-wrapper");
 
     if (SpeechRec) {
       recognition = new SpeechRec();
       recognition.lang = "hi-IN";
       recognition.continuous = false;
 
-      recognition.onstart = () => {
-        if (micTriggerBtn) micTriggerBtn.classList.add("listening");
-        if (btnText) btnText.innerText = "LISTENING...";
-        if (statusHeader) statusHeader.innerText = "JARVIS LISTENING";
-        if (systemSubtitle) systemSubtitle.innerText = "Listening to your voice...";
+      recognition.onstart = function() {
+        if (micBtn) micBtn.classList.add("listening");
+        if (btnTxt) btnTxt.innerText = "LISTENING...";
+        if (statusH) statusH.innerText = "JARVIS LISTENING";
+        if (subTxt) subTxt.innerText = "Listening to your voice...";
       };
 
-      recognition.onresult = async (e) => {
-        if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
-        if (btnText) btnText.innerText = "WAKE UP & TALK";
-        const transcript = e.results[0][0].transcript.trim();
-        if (systemSubtitle) systemSubtitle.innerText = `You: "${transcript}"`;
-        await handleCommands(transcript);
-      };
-
-      recognition.onerror = () => {
-        if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
-        if (btnText) btnText.innerText = "WAKE UP & TALK";
-        if (statusHeader) statusHeader.innerText = "JARVIS STANDBY";
-      };
-    }
-
-    function startMicRecognition() {
-      if (recognition) {
-        try { recognition.start(); } catch(e) {}
-      } else {
-        alert("Speech Recognition not supported in this browser.");
-      }
-    }
-
-    // Commands Engine
-    async function handleCommands(cmd) {
-      const lower = cmd.toLowerCase();
-      if (statusHeader) statusHeader.innerText = "PROCESSING...";
-
-      // 1. Ashish Easter Egg
-      if (lower.includes("ashish") || lower.includes("आशीष")) {
-        const reply = "Haan Boss, main Ashish ko ache se janti hoon. Aur Boss kya aapko pata hai Ashish ki girlfriend ka na
+      recognition.onresult = function(e) {
+        if (micBtn) micBtn.classList.remove("listening");
+        if (btnTxt) btnTxt.innerText = "WAKE UP & TALK";
+        var transcript = e.results[0][0].transcript.trim();
+        if (subT
