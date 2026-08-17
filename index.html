@@ -35,7 +35,7 @@
       align-items: center;
     }
 
-    /* 1. HOLOGRAM LOADER */
+    /* 1. AUTO-DISMISSING LOADER (NO JS DEPENDENCY) */
     #loader-screen {
       position: fixed;
       inset: 0;
@@ -43,8 +43,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 10000;
-      transition: opacity 0.4s ease;
+      z-index: 100000;
+      animation: autoHideLoader 1.5s forwards ease-in-out;
+      pointer-events: none;
     }
 
     .loader-content {
@@ -121,7 +122,7 @@
       height: 100%;
       background: var(--primary-green);
       box-shadow: 0 0 12px var(--primary-green);
-      transition: width 0.1s linear;
+      animation: fillBar 1.2s forwards ease-in-out;
     }
 
     .created-tag {
@@ -334,7 +335,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.85);
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: flex-end;
       z-index: 20000;
@@ -447,6 +448,12 @@
       margin-top: 10px;
     }
 
+    /* Keyframe Animations */
+    @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
+    @keyframes autoHideLoader {
+      0%, 80% { opacity: 1; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; display: none; }
+    }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes rotateOuter { 100% { transform: rotate(360deg); } }
     @keyframes rotateFast { 100% { transform: rotate(1080deg); } }
@@ -468,14 +475,14 @@
       <h2 class="glow-text">JARVIS AI SYSTEM</h2>
       <p class="sub-loader">INITIALIZING NEURAL NETWORK</p>
       <div class="progress-bar-container">
-        <div class="progress-bar" id="progress-fill"></div>
+        <div class="progress-bar"></div>
       </div>
       <span class="created-tag">Created by Shivam Gupta</span>
     </div>
   </div>
 
   <!-- 2. MAIN APP INTERFACE -->
-  <div id="app" style="display: flex;">
+  <div id="app">
     <div class="top-bar">
       <div class="battery-status">
         <i class="fa-solid fa-bolt glow-icon"></i>
@@ -509,7 +516,7 @@
     <!-- Text Response Area -->
     <div class="response-box">
       <span class="jarvis-tag">JARVIS CORE</span>
-      <p id="system-subtitle">System initialized. Tap button to activate.</p>
+      <p id="system-subtitle">System online. Tap button to speak.</p>
     </div>
 
     <div id="yt-player-container"></div>
@@ -523,7 +530,7 @@
   </div>
 
   <!-- 3. SETTINGS MODAL -->
-  <div id="settings-modal" class="modal" style="display: none;">
+  <div id="settings-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>SYSTEM CONFIGURATION</h3>
@@ -599,9 +606,6 @@
       autoListen: localStorage.getItem("jarvis_auto_listen") === "true"
     };
 
-    const loaderScreen = document.getElementById("loader-screen");
-    const progressFill = document.getElementById("progress-fill");
-    const appContainer = document.getElementById("app");
     const liveTime = document.getElementById("live-time");
     const liveDate = document.getElementById("live-date");
     const batteryLevel = document.getElementById("battery-level");
@@ -621,25 +625,7 @@
     const autoListenToggle = document.getElementById("auto-listen-toggle");
     const saveConfigBtn = document.getElementById("save-config");
 
-    // 100% Guaranteed Loader Screen Dismiss (Instant 1.2s max)
-    let p = 0;
-    const pInterval = setInterval(() => {
-      p += 20;
-      if (progressFill) progressFill.style.width = p + "%";
-      if (p >= 100) {
-        clearInterval(pInterval);
-        setTimeout(() => {
-          if (loaderScreen) {
-            loaderScreen.style.opacity = "0";
-            setTimeout(() => {
-              loaderScreen.style.display = "none";
-            }, 300);
-          }
-        }, 200);
-      }
-    }, 100);
-
-    // Clock & Date
+    // Live Clock & Date
     function updateClock() {
       const now = new Date();
       if (liveTime) liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
@@ -665,7 +651,7 @@
       });
     }
 
-    // Speech Recognition
+    // Speech Recognition Setup
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
 
@@ -686,4 +672,20 @@
         if (btnText) btnText.innerText = "WAKE UP & TALK";
         const transcript = e.results[0][0].transcript.trim();
         if (systemSubtitle) systemSubtitle.innerText = `You: "${transcript}"`;
-        await handleCo
+        await handleCommands(transcript);
+      };
+
+      recognition.onerror = () => {
+        if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
+        if (btnText) btnText.innerText = "WAKE UP & TALK";
+        if (statusHeader) statusHeader.innerText = "JARVIS STANDBY";
+      };
+    }
+
+    function startListening() {
+      if (recognition) {
+        try { recognition.start(); } catch(e) {}
+      }
+    }
+
+    if (micTriggerB
