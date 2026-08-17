@@ -9,13 +9,12 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: #030a07;
       background: radial-gradient(circle at center, #062217 0%, #030a07 100%);
       color: #00ff88;
       min-height: 100vh;
@@ -45,18 +44,18 @@
 
     .battery-box {
       font-size: 1rem;
-      font-weight: bold;
+      font-weight: 700;
     }
 
     .main-title {
       font-size: 1.4rem;
-      font-weight: bold;
+      font-weight: 800;
       letter-spacing: 3px;
       text-shadow: 0 0 10px #00ff88;
     }
 
     .gear-button {
-      background: rgba(0, 255, 136, 0.15);
+      background: rgba(0, 255, 136, 0.12);
       border: 1px solid #00ff88;
       border-radius: 50%;
       width: 44px;
@@ -77,7 +76,7 @@
 
     #clock-text {
       font-size: 2.2rem;
-      font-weight: bold;
+      font-weight: 800;
       letter-spacing: 2px;
     }
 
@@ -144,7 +143,7 @@
 
     #status-title {
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 700;
       letter-spacing: 3px;
       text-shadow: 0 0 8px #00ff88;
     }
@@ -162,7 +161,7 @@
 
     .core-tag {
       font-size: 0.75rem;
-      font-weight: bold;
+      font-weight: 800;
       letter-spacing: 2px;
       display: block;
     }
@@ -186,7 +185,7 @@
       border-radius: 40px;
       color: #ffffff;
       font-size: 1rem;
-      font-weight: bold;
+      font-weight: 700;
       letter-spacing: 2px;
       display: flex;
       justify-content: center;
@@ -202,7 +201,7 @@
       box-shadow: 0 0 30px #00ff88;
     }
 
-    /* PURE CSS OVERLAY MODAL */
+    /* SETTINGS OVERLAY */
     #settings-modal {
       position: fixed;
       inset: 0;
@@ -210,7 +209,7 @@
       display: none;
       justify-content: center;
       align-items: flex-end;
-      z-index: 100000;
+      z-index: 1000000;
     }
 
     .modal-card {
@@ -303,7 +302,7 @@
       background: #00ff88;
       border: none;
       color: #000000;
-      font-weight: bold;
+      font-weight: 800;
       border-radius: 8px;
       cursor: pointer;
       margin-top: 10px;
@@ -323,12 +322,12 @@
         ⚡ <span id="bat-val">--%</span>
       </div>
       <h1 class="main-title">JARVIS AI</h1>
-      <button class="gear-button" onclick="openSettings()">⚙</button>
+      <button class="gear-button" id="gear-btn">⚙</button>
     </div>
 
     <div class="clock-container">
       <h2 id="clock-text">--:--:--</h2>
-      <p id="date-text">Syncing Live Date...</p>
+      <p id="date-text">Syncing Date...</p>
     </div>
 
     <div class="reactor-box" id="reactor-el">
@@ -350,7 +349,7 @@
     </div>
 
     <div class="footer-action">
-      <button id="mic-btn" class="mic-button" onclick="startMic()">
+      <button id="mic-btn" class="mic-button">
         🎤 <span id="mic-text">WAKE UP & TALK</span>
       </button>
     </div>
@@ -361,7 +360,7 @@
     <div class="modal-card">
       <div class="modal-head">
         <h3>SYSTEM CONFIGURATION</h3>
-        <button onclick="closeSettings()">✕</button>
+        <button id="close-modal-btn">✕</button>
       </div>
 
       <div class="modal-body">
@@ -416,220 +415,222 @@
           <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, calling, YouTube music play aur smart chat provide karta hai.</p>
         </div>
 
-        <button class="save-btn" onclick="saveSettings()">SAVE CONFIGURATION</button>
+        <button class="save-btn" id="save-settings-btn">SAVE CONFIGURATION</button>
       </div>
     </div>
   </div>
 
   <script>
-    function loadConfig() {
-      return {
-        groqKey: localStorage.getItem("j_groq") || "",
-        ytKey: localStorage.getItem("j_yt") || "",
-        voice: localStorage.getItem("j_voice") || "female",
-        gfMode: localStorage.getItem("j_gf") === "true",
-        autoListen: localStorage.getItem("j_auto") === "true"
-      };
-    }
-
-    function updateLiveClock() {
-      var now = new Date();
-      var timeEl = document.getElementById("clock-text");
-      var dateEl = document.getElementById("date-text");
-      if (timeEl) timeEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
-      if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
-    }
-    updateLiveClock();
-    setInterval(updateLiveClock, 1000);
-
-    function updateBattery() {
-      if (typeof navigator !== "undefined" && navigator.getBattery) {
-        navigator.getBattery().then(function(b) {
-          function setLevel() {
-            var batEl = document.getElementById("bat-val");
-            if (batEl) batEl.innerText = Math.round(b.level * 100) + "%";
-          }
-          setLevel();
-          b.addEventListener('levelchange', setLevel);
-        }).catch(function() {
-          document.getElementById("bat-val").innerText = "100%";
-        });
-      } else {
-        document.getElementById("bat-val").innerText = "100%";
-      }
-    }
-    updateBattery();
-
-    function openSettings() {
-      var cfg = loadConfig();
-      document.getElementById("groq-key-input").value = cfg.groqKey;
-      document.getElementById("yt-key-input").value = cfg.ytKey;
-      document.getElementById("voice-persona-input").value = cfg.voice;
-      document.getElementById("gf-mode-input").checked = cfg.gfMode;
-      document.getElementById("auto-listen-input").checked = cfg.autoListen;
-      document.getElementById("settings-modal").style.display = "flex";
-    }
-
-    function closeSettings() {
-      document.getElementById("settings-modal").style.display = "none";
-    }
-
-    function saveSettings() {
-      var g = document.getElementById("groq-key-input").value.trim();
-      var y = document.getElementById("yt-key-input").value.trim();
-      var v = document.getElementById("voice-persona-input").value;
-      var gf = document.getElementById("gf-mode-input").checked;
-      var al = document.getElementById("auto-listen-input").checked;
-
-      localStorage.setItem("j_groq", g);
-      localStorage.setItem("j_yt", y);
-      localStorage.setItem("j_voice", v);
-      localStorage.setItem("j_gf", gf);
-      localStorage.setItem("j_auto", al);
-
-      closeSettings();
-      speak(gf ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
-    }
-
-    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var recognition = null;
-
-    if (SpeechRec) {
-      recognition = new SpeechRec();
-      recognition.lang = "hi-IN";
-      recognition.continuous = false;
-
-      recognition.onstart = function() {
-        document.getElementById("mic-btn").classList.add("listening");
-        document.getElementById("mic-text").innerText = "LISTENING...";
-        document.getElementById("status-title").innerText = "JARVIS LISTENING";
-        document.getElementById("subtitle-text").innerText = "Listening to your voice...";
-      };
-
-      recognition.onresult = function(e) {
-        document.getElementById("mic-btn").classList.remove("listening");
-        document.getElementById("mic-text").innerText = "WAKE UP & TALK";
-        var transcript = e.results[0][0].transcript.trim();
-        document.getElementById("subtitle-text").innerText = 'You: "' + transcript + '"';
-        handleCommand(transcript);
-      };
-
-      recognition.onerror = function() {
-        document.getElementById("mic-btn").classList.remove("listening");
-        document.getElementById("mic-text").innerText = "WAKE UP & TALK";
-        document.getElementById("status-title").innerText = "JARVIS STANDBY";
-      };
-    }
-
-    function startMic() {
-      if (recognition) {
-        try { recognition.start(); } catch(e) {}
-      } else {
-        alert("Speech Recognition not supported in this browser.");
-      }
-    }
-
-    function handleCommand(cmd) {
-      var lower = cmd.toLowerCase();
-      var cfg = loadConfig();
-      document.getElementById("status-title").innerText = "PROCESSING...";
-
-      if (lower.includes("ashish") || lower.includes("आशीष")) {
-        var reply = "Haan Boss, main Ashish ko ache se janti hoon. Aur Boss kya aapko pata hai Ashish ki girlfriend ka naam Ziya hai, aur Ziya ke papa SDM hain. Kya Ashish ne aapko nahi bataya ki uska crush bohot si ladkiyon par hai? Aur uski ek bestie bhi hai jiska naam Hifza hai. Hifza Ashish ko bohot manti hai aur usko sweet, mithai, cake aur chicken khilati hai.";
-        speak(reply);
-        return;
+    (function () {
+      // 1. SAFE CONFIGURATION RETRIEVAL
+      function getConfig() {
+        var cfg = { groqKey: "", ytKey: "", voice: "female", gfMode: false, autoListen: false };
+        try {
+          cfg.groqKey = localStorage.getItem("j_groq") || "";
+          cfg.ytKey = localStorage.getItem("j_yt") || "";
+          cfg.voice = localStorage.getItem("j_voice") || "female";
+          cfg.gfMode = localStorage.getItem("j_gf") === "true";
+          cfg.autoListen = localStorage.getItem("j_auto") === "true";
+        } catch (e) {}
+        return cfg;
       }
 
-      if (lower.includes("tumhe kisne banaya") || lower.includes("who created you") || lower.includes("kaun banaya") || lower.includes("किसने बनाया")) {
-        speak("Mujhe Shivam Boss ne banaya hai, HTML, CSS aur JavaScript ka use karke!");
-        return;
-      }
-
-      if (lower.includes("time") || lower.includes("samay") || lower.includes("kitna bja") || lower.includes("समय") || lower.includes("टाइम") || lower.includes("date") || lower.includes("tarikh")) {
+      // 2. IMMEDIATE TIME & DATE UPDATE
+      function updateTimeAndDate() {
         var now = new Date();
-        var timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        speak("Boss, abhi time hai " + timeStr);
-        return;
+        var timeEl = document.getElementById("clock-text");
+        var dateEl = document.getElementById("date-text");
+        if (timeEl) {
+          timeEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        if (dateEl) {
+          dateEl.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+      }
+      updateTimeAndDate();
+      setInterval(updateTimeAndDate, 1000);
+
+      // 3. HARDWARE BATTERY SYNC
+      function syncBattery() {
+        try {
+          if (navigator.getBattery) {
+            navigator.getBattery().then(function (b) {
+              function setL() {
+                var batEl = document.getElementById("bat-val");
+                if (batEl) batEl.innerText = Math.round(b.level * 100) + "%";
+              }
+              setL();
+              b.addEventListener('levelchange', setL);
+            }).catch(function () {
+              var batEl = document.getElementById("bat-val");
+              if (batEl) batEl.innerText = "100%";
+            });
+          } else {
+            var batEl = document.getElementById("bat-val");
+            if (batEl) batEl.innerText = "100%";
+          }
+        } catch (e) {
+          var batEl = document.getElementById("bat-val");
+          if (batEl) batEl.innerText = "100%";
+        }
+      }
+      syncBattery();
+
+      // 4. SETTINGS MODAL HANDLERS
+      var modal = document.getElementById("settings-modal");
+      var gearBtn = document.getElementById("gear-btn");
+      var closeBtn = document.getElementById("close-modal-btn");
+      var saveBtn = document.getElementById("save-settings-btn");
+
+      if (gearBtn) {
+        gearBtn.onclick = function () {
+          var c = getConfig();
+          document.getElementById("groq-key-input").value = c.groqKey;
+          document.getElementById("yt-key-input").value = c.ytKey;
+          document.getElementById("voice-persona-input").value = c.voice;
+          document.getElementById("gf-mode-input").checked = c.gfMode;
+          document.getElementById("auto-listen-input").checked = c.autoListen;
+          if (modal) modal.style.display = "flex";
+        };
       }
 
-      var isYouTube = /play|gana|gaana|song|sunao|baja|bajaao|chalao|kholo|open|youtube|यूट्यूब|गाना|सॉन्ग|सॉन्ग्स|चलाओ|बजाओ|सुनाओ|प्ले/i.test(cmd);
-      if (isYouTube) {
-        var cleanSong = cmd.replace(/jarvis|जार्विस|play|प्ले|gana|गाना|gaana|bajaao|बजाओ|baja|sunao|सुनाओ|song|सॉन्ग|chalao|चलाओ|kalyani|youtube|यूट्यूब|kholo|खोलो|open|ओपन|on|pe|par|me|mein/gi, "").trim();
-        if (!cleanSong) cleanSong = "Trending Bollywood Songs";
-
-        var reply = cfg.gfMode 
-          ? "Haan Shivam, main aapke liye " + cleanSong + " YouTube par chala rahi hoon." 
-          : "Opening YouTube and playing " + cleanSong + ", Sir.";
-        
-        speak(reply);
-        window.location.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(cleanSong);
-        return;
+      if (closeBtn) {
+        closeBtn.onclick = function () {
+          if (modal) modal.style.display = "none";
+        };
       }
 
-      if (lower.includes("whatsapp") || lower.includes("chat") || lower.includes("message") || lower.includes("व्हाट्सएप")) {
-        var reply = cfg.gfMode ? "Shivam, WhatsApp open kar rahi hoon." : "Opening WhatsApp, Sir.";
-        speak(reply);
-        window.location.href = "whatsapp://";
-        return;
+      if (saveBtn) {
+        saveBtn.onclick = function () {
+          var g = document.getElementById("groq-key-input").value.trim();
+          var y = document.getElementById("yt-key-input").value.trim();
+          var v = document.getElementById("voice-persona-input").value;
+          var gf = document.getElementById("gf-mode-input").checked;
+          var al = document.getElementById("auto-listen-input").checked;
+
+          try {
+            localStorage.setItem("j_groq", g);
+            localStorage.setItem("j_yt", y);
+            localStorage.setItem("j_voice", v);
+            localStorage.setItem("j_gf", gf);
+            localStorage.setItem("j_auto", al);
+          } catch (e) {}
+
+          if (modal) modal.style.display = "none";
+          speakText(gf ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
+        };
       }
 
-      if (lower.includes("call") || lower.includes("phone") || lower.includes("dial") || lower.includes("कॉल")) {
-        var digits = lower.match(/\d+/);
-        var telNumber = digits ? digits[0] : "";
-        speak(telNumber ? "Calling " + telNumber + ", Sir." : "Opening dialer pad, Sir.");
-        window.location.href = telNumber ? "tel:" + telNumber : "tel:";
-        return;
+      // 5. SPEECH RECOGNITION (MIC ENGINE)
+      var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var recognition = null;
+      var micBtn = document.getElementById("mic-btn");
+      var micText = document.getElementById("mic-text");
+      var statusTitle = document.getElementById("status-title");
+      var subtitleText = document.getElementById("subtitle-text");
+
+      if (SpeechRec) {
+        recognition = new SpeechRec();
+        recognition.lang = "hi-IN";
+        recognition.continuous = false;
+
+        recognition.onstart = function () {
+          if (micBtn) micBtn.classList.add("listening");
+          if (micText) micText.innerText = "LISTENING...";
+          if (statusTitle) statusTitle.innerText = "JARVIS LISTENING";
+          if (subtitleText) subtitleText.innerText = "Listening to your voice...";
+        };
+
+        recognition.onresult = function (e) {
+          if (micBtn) micBtn.classList.remove("listening");
+          if (micText) micText.innerText = "WAKE UP & TALK";
+          var transcript = e.results[0][0].transcript.trim();
+          if (subtitleText) subtitleText.innerText = 'You: "' + transcript + '"';
+          routeCommand(transcript);
+        };
+
+        recognition.onerror = function () {
+          if (micBtn) micBtn.classList.remove("listening");
+          if (micText) micText.innerText = "WAKE UP & TALK";
+          if (statusTitle) statusTitle.innerText = "JARVIS STANDBY";
+        };
       }
 
-      if (cfg.groqKey) {
-        var sys = "You are JARVIS, an advanced AI created by Shivam Gupta. Answer crisply and short in natural Hinglish.";
-        if (cfg.gfMode) {
-          sys = "You are Shivam's sweet caring girlfriend. Call him Shivam with love. Reply in sweet, romantic short Hinglish.";
+      function startListening() {
+        if (recognition) {
+          try { recognition.start(); } catch (e) {}
+        } else {
+          alert("Speech Recognition not supported in this browser.");
+        }
+      }
+
+      if (micBtn) {
+        micBtn.onclick = function () {
+          startListening();
+        };
+      }
+
+      // 6. INTENTS & COMMAND ROUTING
+      function routeCommand(cmd) {
+        var lower = cmd.toLowerCase();
+        var c = getConfig();
+        if (statusTitle) statusTitle.innerText = "PROCESSING...";
+
+        // Ashish Secret Easter Egg
+        if (lower.includes("ashish") || lower.includes("आशीष")) {
+          var reply = "Haan Boss, main Ashish ko ache se janti hoon. Aur Boss kya aapko pata hai Ashish ki girlfriend ka naam Ziya hai, aur Ziya ke papa SDM hain. Kya Ashish ne aapko nahi bataya ki uska crush bohot si ladkiyon par hai? Aur uski ek bestie bhi hai jiska naam Hifza hai. Hifza Ashish ko bohot manti hai aur usko sweet, mithai, cake aur chicken khilati hai.";
+          speakText(reply);
+          return;
         }
 
-        fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cfg.groqKey
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-              { role: "system", content: sys },
-              { role: "user", content: cmd }
-            ],
-            temperature: 0.7,
-            max_tokens: 150
-          })
-        }).then(function(res) { return res.json(); })
-          .then(function(data) {
-            if (data.choices && data.choices[0]) {
-              speak(data.choices[0].message.content);
-            } else {
-              speak("Groq API error. Check key in settings.");
-            }
-          }).catch(function() {
-            speak("AI servers connect nahi ho pa rahe hain.");
-          });
-      } else {
-        speak("Boss, Settings icon par click karke apni Groq API Key save kar lijiye.");
-      }
-    }
+        // Creator Identification
+        if (lower.includes("tumhe kisne banaya") || lower.includes("who created you") || lower.includes("kaun banaya") || lower.includes("किसने बनाया")) {
+          speakText("Mujhe Shivam Boss ne banaya hai, HTML, CSS aur JavaScript ka use karke!");
+          return;
+        }
 
-    function speak(text) {
-      var cfg = loadConfig();
-      window.speechSynthesis.cancel();
-      var utter = new SpeechSynthesisUtterance(text);
-      utter.rate = 1.0;
-      utter.pitch = (cfg.gfMode || cfg.voice === "female" || cfg.voice === "girl") ? 1.25 : 0.9;
-      utter.lang = "hi-IN";
+        // Time / Date Intent
+        if (lower.includes("time") || lower.includes("samay") || lower.includes("kitna bja") || lower.includes("समय") || lower.includes("टाइम") || lower.includes("date") || lower.includes("tarikh")) {
+          var now = new Date();
+          var timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          speakText("Boss, abhi time hai " + timeStr);
+          return;
+        }
 
-      utter.onstart = function() {
-        document.getElementById("reactor-el").classList.add("speaking");
-        document.getElementById("status-title").innerText = "JARVIS SPEAKING";
-      };
+        // YouTube Music Play Intent
+        var isYouTube = /play|gana|gaana|song|sunao|baja|bajaao|chalao|kholo|open|youtube|यूट्यूब|गाना|सॉन्ग|सॉन्ग्स|चलाओ|बजाओ|सुनाओ|प्ले/i.test(cmd);
+        if (isYouTube) {
+          var cleanSong = cmd.replace(/jarvis|जार्विस|play|प्ले|gana|गाना|gaana|bajaao|बजाओ|baja|sunao|सुनाओ|song|सॉन्ग|chalao|चलाओ|kalyani|youtube|यूट्यूब|kholo|खोलो|open|ओपन|on|pe|par|me|mein/gi, "").trim();
+          if (!cleanSong) cleanSong = "Trending Bollywood Songs";
 
-      utter.onend = function() {
-        document.getElementById("reactor-el").classList.remove("speaking");
-        document.getElementById("status-title").innerText
+          var reply = c.gfMode
+            ? "Haan Shivam, main aapke liye " + cleanSong + " YouTube par chala rahi hoon."
+            : "Opening YouTube and playing " + cleanSong + ", Sir.";
+
+          speakText(reply);
+          window.location.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(cleanSong);
+          return;
+        }
+
+        // WhatsApp Intent
+        if (lower.includes("whatsapp") || lower.includes("chat") || lower.includes("message") || lower.includes("व्हाट्सएप")) {
+          var reply = c.gfMode ? "Shivam, WhatsApp open kar rahi hoon." : "Opening WhatsApp, Sir.";
+          speakText(reply);
+          window.location.href = "whatsapp://";
+          return;
+        }
+
+        // Phone Dialing Intent
+        if (lower.includes("call") || lower.includes("phone") || lower.includes("dial") || lower.includes("कॉल")) {
+          var digits = lower.match(/\d+/);
+          var telNumber = digits ? digits[0] : "";
+          speakText(telNumber ? "Calling " + telNumber + ", Sir." : "Opening dialer pad, Sir.");
+          window.location.href = telNumber ? "tel:" + telNumber : "tel:";
+          return;
+        }
+
+        // Groq API Intelligence
+        if (c.groqKey) {
+          var sys = "You are JARVIS, an advanced AI created by Shivam Gupta. Answer crisply and short in natural Hinglish.";
+          if (c.gfMode) {
+            sys = "You are Shivam's sweet caring girl
