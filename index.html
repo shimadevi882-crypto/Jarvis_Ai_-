@@ -43,8 +43,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
-      transition: opacity 0.5s ease;
+      z-index: 10000;
+      transition: opacity 0.4s ease;
     }
 
     .loader-content {
@@ -337,7 +337,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      z-index: 2000;
+      z-index: 20000;
     }
 
     .modal-content {
@@ -447,8 +447,6 @@
       margin-top: 10px;
     }
 
-    .hidden { display: none !important; }
-
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes rotateOuter { 100% { transform: rotate(360deg); } }
     @keyframes rotateFast { 100% { transform: rotate(1080deg); } }
@@ -477,7 +475,7 @@
   </div>
 
   <!-- 2. MAIN APP INTERFACE -->
-  <div id="app" class="hidden">
+  <div id="app" style="display: flex;">
     <div class="top-bar">
       <div class="battery-status">
         <i class="fa-solid fa-bolt glow-icon"></i>
@@ -525,7 +523,7 @@
   </div>
 
   <!-- 3. SETTINGS MODAL -->
-  <div id="settings-modal" class="modal hidden">
+  <div id="settings-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
         <h3>SYSTEM CONFIGURATION</h3>
@@ -623,22 +621,23 @@
     const autoListenToggle = document.getElementById("auto-listen-toggle");
     const saveConfigBtn = document.getElementById("save-config");
 
-    // Fast Auto Loader Transition (Instant for GitHub)
-    let progress = 0;
-    const loadTimer = setInterval(() => {
-      progress += 10;
-      if (progressFill) progressFill.style.width = progress + "%";
-      if (progress >= 100) {
-        clearInterval(loadTimer);
+    // 100% Guaranteed Loader Screen Dismiss (Instant 1.2s max)
+    let p = 0;
+    const pInterval = setInterval(() => {
+      p += 20;
+      if (progressFill) progressFill.style.width = p + "%";
+      if (p >= 100) {
+        clearInterval(pInterval);
         setTimeout(() => {
-          if (loaderScreen) loaderScreen.style.opacity = "0";
-          setTimeout(() => {
-            if (loaderScreen) loaderScreen.classList.add("hidden");
-            if (appContainer) appContainer.classList.remove("hidden");
-          }, 300);
-        }, 150);
+          if (loaderScreen) {
+            loaderScreen.style.opacity = "0";
+            setTimeout(() => {
+              loaderScreen.style.display = "none";
+            }, 300);
+          }
+        }, 200);
       }
-    }, 60);
+    }, 100);
 
     // Clock & Date
     function updateClock() {
@@ -686,4 +685,5 @@
         if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
         if (btnText) btnText.innerText = "WAKE UP & TALK";
         const transcript = e.results[0][0].transcript.trim();
-       
+        if (systemSubtitle) systemSubtitle.innerText = `You: "${transcript}"`;
+        await handleCo
