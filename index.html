@@ -8,7 +8,7 @@
   <style>
     :root {
       --primary-green: #00ff88;
-      --glow-green: rgba(0, 255, 136, 0.4);
+      --glow-green: rgba(0, 255, 136, 0.35);
       --dark-bg: #040d0a;
       --card-bg: #061a12;
     }
@@ -17,7 +17,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -26,13 +26,13 @@
       background: radial-gradient(circle at center, #08241a 0%, var(--dark-bg) 100%);
       color: var(--primary-green);
       min-height: 100vh;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow-x: hidden;
     }
 
-    /* 1. AUTO DESTROY LOADER SCREEN */
+    /* 1. AUTO DISMISSING LOADER (NO SCREEN FREEZE) */
     #loader-screen {
       position: fixed;
       inset: 0;
@@ -41,7 +41,8 @@
       justify-content: center;
       align-items: center;
       z-index: 99999;
-      animation: killLoader 1.2s forwards ease-in-out;
+      animation: dismissLoader 0.8s forwards ease-in-out;
+      animation-delay: 0.8s;
       pointer-events: none;
     }
 
@@ -55,8 +56,8 @@
 
     .hologram-spinner {
       position: relative;
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -68,45 +69,45 @@
     }
 
     .holo-ring.r1 {
-      width: 95px;
-      height: 95px;
+      width: 85px;
+      height: 85px;
       border: 3px dashed var(--primary-green);
-      animation: rotateOuter 3s linear infinite;
+      animation: spinRing 3s linear infinite;
     }
 
     .holo-ring.r2 {
-      width: 65px;
-      height: 65px;
+      width: 55px;
+      height: 55px;
       border: 2px solid transparent;
       border-top: 3px solid var(--primary-green);
       border-bottom: 3px solid var(--primary-green);
-      animation: rotateOuter 1.5s reverse linear infinite;
+      animation: spinRing 1.5s reverse linear infinite;
     }
 
     .holo-core {
-      width: 25px;
-      height: 25px;
+      width: 22px;
+      height: 22px;
       background: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 25px var(--primary-green);
-      animation: breathe 1s infinite alternate;
+      box-shadow: 0 0 20px var(--primary-green);
+      animation: pulseCore 1s infinite alternate;
     }
 
     .glow-text {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: 3px;
       text-shadow: 0 0 10px var(--primary-green);
     }
 
     .sub-loader {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       letter-spacing: 2px;
       opacity: 0.8;
     }
 
     .progress-bar-container {
-      width: 240px;
+      width: 220px;
       height: 6px;
       background: rgba(0, 255, 136, 0.15);
       border-radius: 10px;
@@ -118,17 +119,17 @@
       width: 0%;
       height: 100%;
       background: var(--primary-green);
-      box-shadow: 0 0 12px var(--primary-green);
-      animation: fillBar 1s forwards ease-in-out;
+      box-shadow: 0 0 10px var(--primary-green);
+      animation: fillBar 0.7s forwards ease-in-out;
     }
 
     .created-tag {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       opacity: 0.75;
       letter-spacing: 2px;
     }
 
-    /* 2. MAIN APP INTERFACE */
+    /* 2. MAIN APP */
     #app {
       width: 100%;
       max-width: 440px;
@@ -139,7 +140,6 @@
       justify-content: space-between;
       align-items: center;
       position: relative;
-      z-index: 10;
     }
 
     .top-bar {
@@ -150,32 +150,31 @@
     }
 
     .battery-status {
-      font-size: 1rem;
-      font-weight: bold;
+      font-size: 0.95rem;
+      font-weight: 700;
       letter-spacing: 1px;
     }
 
     .main-title {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: 4px;
       text-shadow: 0 0 10px var(--primary-green);
     }
 
     .settings-btn {
-      background: none;
+      background: rgba(0, 255, 136, 0.08);
       border: 1px solid var(--primary-green);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       color: var(--primary-green);
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 10px var(--glow-green);
-      z-index: 100;
     }
 
     .time-date-container {
@@ -184,7 +183,7 @@
     }
 
     #live-time {
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: 3px;
     }
@@ -197,8 +196,8 @@
     /* 3. ARC REACTOR */
     .reactor-wrapper {
       position: relative;
-      width: 200px;
-      height: 200px;
+      width: 190px;
+      height: 190px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -211,7 +210,7 @@
       border-radius: 50%;
       border: 2px dashed var(--primary-green);
       box-shadow: 0 0 20px var(--glow-green);
-      animation: rotateOuter 20s linear infinite;
+      animation: spinRing 20s linear infinite;
     }
 
     .node {
@@ -220,7 +219,7 @@
       height: 8px;
       background: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 10px #ffffff;
+      box-shadow: 0 0 8px #ffffff;
     }
 
     .n1 { top: 0; left: 50%; transform: translateX(-50%); }
@@ -230,39 +229,34 @@
 
     .middle-pulsing-ring {
       position: absolute;
-      width: 135px;
-      height: 135px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
       border: 2px solid var(--primary-green);
       background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
-      animation: breathe 3s infinite ease-in-out;
+      animation: pulseCore 3s infinite ease-in-out;
     }
 
     .inner-glowing-core {
-      width: 75px;
-      height: 75px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       background: radial-gradient(circle, #ffffff 0%, var(--primary-green) 60%, transparent 100%);
       box-shadow: 0 0 35px var(--primary-green);
-      transition: transform 0.2s ease;
     }
 
     .speaking-reactor .inner-glowing-core {
       animation: reactorZoom 0.35s ease-in-out infinite alternate !important;
     }
 
-    .speaking-reactor .outer-dashed-ring {
-      animation: rotateFast 2s linear infinite !important;
-    }
-
     #jarvis-status-header {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: 3px;
       text-shadow: 0 0 8px var(--primary-green);
     }
 
-    /* 4. TEXT & ACTIONS */
+    /* 4. RESPONSE BOX */
     .response-box {
       width: 100%;
       max-height: 90px;
@@ -309,21 +303,20 @@
       gap: 12px;
       box-shadow: 0 0 15px var(--glow-green);
       cursor: pointer;
-      transition: 0.3s ease;
+      transition: 0.2s ease;
     }
 
     .glow-pill-button.listening {
       background: rgba(0, 255, 136, 0.25);
       border-color: #ffffff;
       box-shadow: 0 0 30px var(--primary-green);
-      animation: buttonPulse 1s infinite alternate;
     }
 
-    /* 5. SETTINGS MODAL */
+    /* 5. MODAL */
     #settings-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.92);
       display: none;
       justify-content: center;
       align-items: flex-end;
@@ -435,23 +428,21 @@
       font-size: 1rem;
     }
 
-    /* Keyframe Animations */
+    /* Keyframes */
     @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
-    @keyframes killLoader {
-      0%, 80% { opacity: 1; visibility: visible; }
+    @keyframes dismissLoader {
+      0% { opacity: 1; visibility: visible; }
       99% { opacity: 0; visibility: hidden; }
-      100% { display: none; visibility: hidden; opacity: 0; }
+      100% { display: none !important; opacity: 0; visibility: hidden; }
     }
-    @keyframes rotateOuter { 100% { transform: rotate(360deg); } }
-    @keyframes rotateFast { 100% { transform: rotate(1080deg); } }
-    @keyframes breathe { 0%, 100% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
+    @keyframes spinRing { 100% { transform: rotate(360deg); } }
+    @keyframes pulseCore { 0%, 100% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
     @keyframes reactorZoom { 0% { transform: scale(0.9); box-shadow: 0 0 20px var(--primary-green); } 100% { transform: scale(1.25); box-shadow: 0 0 50px #ffffff; } }
-    @keyframes buttonPulse { 0% { box-shadow: 0 0 10px var(--primary-green); } 100% { box-shadow: 0 0 35px #ffffff; } }
   </style>
 </head>
 <body>
 
-  <!-- 1. BOOT SCREEN -->
+  <!-- LOADER -->
   <div id="loader-screen">
     <div class="loader-content">
       <div class="hologram-spinner">
@@ -468,14 +459,14 @@
     </div>
   </div>
 
-  <!-- 2. MAIN APP CONTAINER -->
+  <!-- MAIN INTERFACE -->
   <div id="app">
     <div class="top-bar">
       <div class="battery-status">
-        ⚡ <span id="battery-level">95%</span>
+        ⚡ <span id="battery-level">85%</span>
       </div>
       <h1 class="main-title">JARVIS AI</h1>
-      <button class="settings-btn" id="open-settings-btn" onclick="openConfigModal()">⚙</button>
+      <button class="settings-btn" onclick="openConfigModal()">⚙</button>
     </div>
 
     <div class="time-date-container">
@@ -483,7 +474,7 @@
       <p id="live-date">Loading date...</p>
     </div>
 
-    <!-- Arc Reactor -->
+    <!-- Center Reactor -->
     <div class="reactor-wrapper">
       <div class="outer-dashed-ring" id="outer-ring">
         <span class="node n1"></span>
@@ -509,7 +500,7 @@
     </div>
   </div>
 
-  <!-- 3. CONFIGURATION MODAL -->
+  <!-- SETTINGS MODAL -->
   <div id="settings-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -519,10 +510,8 @@
 
       <div class="modal-scroll-body">
         <div class="config-card dev-card">
-          <div>
-            <h4>System Architect</h4>
-            <p>Created by Shivam Gupta</p>
-          </div>
+          <h4>System Architect</h4>
+          <p>Created by Shivam Gupta</p>
         </div>
 
         <div class="config-card">
@@ -533,11 +522,6 @@
         <div class="config-card">
           <label>YouTube Data v3 API Key</label>
           <input type="password" id="yt-api-key" placeholder="AIzaSyxxxxxxxxxxxxxxx">
-        </div>
-
-        <div class="config-card">
-          <label>ElevenLabs Voice API Key</label>
-          <input type="password" id="eleven-api-key" placeholder="xi-api-key-xxxxxxxx">
         </div>
 
         <div class="config-card">
@@ -552,7 +536,7 @@
         <div class="config-toggle-item">
           <div>
             <h4>GF Mode (Sweet Talk)</h4>
-            <p>Romantic and sweet responses</p>
+            <p>Romantic and caring sweet responses</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="gf-mode-toggle">
@@ -573,7 +557,7 @@
 
         <div class="config-card about-card">
           <h4>About Jarvis Assistant</h4>
-          <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, calling, YouTube songs play aur smart chat provide karta hai.</p>
+          <p>Ise <strong>Shivam Gupta</strong> ne banaya hai. Yeh Android ka proper advanced AI assistant hai jo voice control, direct calling, YouTube music search aur smart replies provide karta hai.</p>
         </div>
 
         <button class="save-settings-btn" onclick="saveConfiguration()">SAVE CONFIGURATION</button>
@@ -581,12 +565,10 @@
     </div>
   </div>
 
-  <!-- 4. CORE ENGINE JAVASCRIPT -->
   <script>
     let CONFIG = {
       groqKey: localStorage.getItem("jarvis_groq_key") || "",
       ytKey: localStorage.getItem("jarvis_yt_key") || "",
-      elevenKey: localStorage.getItem("jarvis_eleven_key") || "",
       voiceGender: localStorage.getItem("jarvis_voice") || "female",
       gfMode: localStorage.getItem("jarvis_gf_mode") === "true",
       autoListen: localStorage.getItem("jarvis_auto_listen") === "true"
@@ -602,12 +584,10 @@
     const reactorWrapper = document.querySelector(".reactor-wrapper");
     const settingsModal = document.getElementById("settings-modal");
 
-    // 1. Live Clock & Realtime Date
+    // Clock & Date (Instant Setup)
     function updateClock() {
       const now = new Date();
-      if (liveTime) {
-        liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
-      }
+      if (liveTime) liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
       if (liveDate) {
         liveDate.innerText = now.toLocaleDateString('en-US', { 
           weekday: 'long', 
@@ -620,22 +600,21 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Battery Monitor
-    if (navigator.getBattery) {
-      navigator.getBattery().then(b => {
-        const updateB = () => {
-          if (batteryLevel) batteryLevel.innerText = `${Math.round(b.level * 100)}%`;
-        };
-        updateB();
-        b.addEventListener('levelchange', updateB);
-      }).catch(() => {});
-    }
+    // Battery Indicator
+    try {
+      if (navigator.getBattery) {
+        navigator.getBattery().then(b => {
+          const updateB = () => { if (batteryLevel) batteryLevel.innerText = `${Math.round(b.level * 100)}%`; };
+          updateB();
+          b.addEventListener('levelchange', updateB);
+        }).catch(() => {});
+      }
+    } catch(e) {}
 
-    // 2. Modal Functions (Direct Click Bypasses DOM Lag)
+    // Modal Handlers
     function openConfigModal() {
       document.getElementById("groq-api-key").value = CONFIG.groqKey;
       document.getElementById("yt-api-key").value = CONFIG.ytKey;
-      document.getElementById("eleven-api-key").value = CONFIG.elevenKey;
       document.getElementById("voice-gender-select").value = CONFIG.voiceGender;
       document.getElementById("gf-mode-toggle").checked = CONFIG.gfMode;
       document.getElementById("auto-listen-toggle").checked = CONFIG.autoListen;
@@ -649,14 +628,12 @@
     function saveConfiguration() {
       CONFIG.groqKey = document.getElementById("groq-api-key").value.trim();
       CONFIG.ytKey = document.getElementById("yt-api-key").value.trim();
-      CONFIG.elevenKey = document.getElementById("eleven-api-key").value.trim();
       CONFIG.voiceGender = document.getElementById("voice-gender-select").value;
       CONFIG.gfMode = document.getElementById("gf-mode-toggle").checked;
       CONFIG.autoListen = document.getElementById("auto-listen-toggle").checked;
 
       localStorage.setItem("jarvis_groq_key", CONFIG.groqKey);
       localStorage.setItem("jarvis_yt_key", CONFIG.ytKey);
-      localStorage.setItem("jarvis_eleven_key", CONFIG.elevenKey);
       localStorage.setItem("jarvis_voice", CONFIG.voiceGender);
       localStorage.setItem("jarvis_gf_mode", CONFIG.gfMode);
       localStorage.setItem("jarvis_auto_listen", CONFIG.autoListen);
@@ -665,7 +642,7 @@
       speakResponse(CONFIG.gfMode ? "Settings save ho gayi Shivam!" : "Settings saved successfully, Sir.");
     }
 
-    // 3. Speech Recognition Engine
+    // Speech Recognition
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
 
@@ -685,4 +662,30 @@
         if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
         if (btnText) btnText.innerText = "WAKE UP & TALK";
         const transcript = e.results[0][0].transcript.trim();
-        if (s
+        if (systemSubtitle) systemSubtitle.innerText = `You: "${transcript}"`;
+        await handleCommands(transcript);
+      };
+
+      recognition.onerror = () => {
+        if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
+        if (btnText) btnText.innerText = "WAKE UP & TALK";
+        if (statusHeader) statusHeader.innerText = "JARVIS STANDBY";
+      };
+    }
+
+    function startMicRecognition() {
+      if (recognition) {
+        try { recognition.start(); } catch(e) {}
+      } else {
+        alert("Speech Recognition not supported in this browser.");
+      }
+    }
+
+    // Commands Engine
+    async function handleCommands(cmd) {
+      const lower = cmd.toLowerCase();
+      if (statusHeader) statusHeader.innerText = "PROCESSING...";
+
+      // 1. Ashish Easter Egg
+      if (lower.includes("ashish") || lower.includes("आशीष")) {
+        const reply = "Haan Boss, main Ashish ko ache se janti hoon. Aur Boss kya aapko pata hai Ashish ki girlfriend ka na
