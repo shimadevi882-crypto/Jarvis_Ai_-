@@ -14,7 +14,7 @@
       --primary-green: #00ff88;
       --glow-green: rgba(0, 255, 136, 0.4);
       --dark-bg: #040d0a;
-      --card-bg: rgba(6, 26, 18, 0.88);
+      --card-bg: rgba(6, 26, 18, 0.95);
     }
 
     * {
@@ -44,7 +44,7 @@
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.5s ease;
     }
 
     .loader-content {
@@ -298,51 +298,6 @@
       align-items: center;
     }
 
-    .action-card {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .action-card iframe {
-      width: 100%;
-      height: 140px;
-      border-radius: 10px;
-      border: 1px solid var(--primary-green);
-      box-shadow: 0 0 15px var(--glow-green);
-    }
-
-    .launch-btn {
-      width: 100%;
-      padding: 10px;
-      background: rgba(0, 255, 136, 0.15);
-      border: 1px solid var(--primary-green);
-      border-radius: 8px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .wa-btn {
-      background: rgba(37, 211, 102, 0.2);
-      border-color: #25d366;
-      color: #25d366;
-    }
-
-    .call-btn {
-      background: rgba(0, 195, 255, 0.2);
-      border-color: #00c3ff;
-      color: #00c3ff;
-    }
-
-    /* 5. ACTION FOOTER */
     .action-footer {
       width: 100%;
     }
@@ -374,7 +329,7 @@
       animation: buttonPulse 1s infinite alternate;
     }
 
-    /* 6. SETTINGS MODAL */
+    /* 5. SETTINGS MODAL */
     .modal {
       position: fixed;
       inset: 0;
@@ -504,7 +459,7 @@
 </head>
 <body>
 
-  <!-- LOADER -->
+  <!-- 1. ADVANCED BOOT LOADER -->
   <div id="loader-screen">
     <div class="loader-content">
       <div class="hologram-spinner">
@@ -521,7 +476,7 @@
     </div>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- 2. MAIN APP INTERFACE -->
   <div id="app" class="hidden">
     <div class="top-bar">
       <div class="battery-status">
@@ -539,6 +494,7 @@
       <p id="live-date">Loading date...</p>
     </div>
 
+    <!-- Center Arc Reactor -->
     <div class="reactor-wrapper">
       <div class="outer-dashed-ring" id="outer-ring">
         <span class="node n1"></span>
@@ -552,9 +508,10 @@
 
     <h3 id="jarvis-status-header">JARVIS STANDBY</h3>
 
+    <!-- Text Response Area -->
     <div class="response-box">
       <span class="jarvis-tag">JARVIS CORE</span>
-      <p id="system-subtitle">System initialized. Tap button or speak to begin.</p>
+      <p id="system-subtitle">System initialized. Tap button to activate.</p>
     </div>
 
     <div id="yt-player-container"></div>
@@ -567,7 +524,7 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
+  <!-- 3. SETTINGS MODAL -->
   <div id="settings-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -595,17 +552,17 @@
         </div>
 
         <div class="config-card">
-          <label><i class="fa-solid fa-user-gear"></i> Voice Gender</label>
+          <label><i class="fa-solid fa-user-gear"></i> Voice Persona</label>
           <select id="voice-gender-select">
-            <option value="female">Friday (Realistic Female Voice)</option>
-            <option value="male">Jarvis (Core Male Voice)</option>
+            <option value="female">Friday (Female Sweet)</option>
+            <option value="male">Jarvis (Core Male)</option>
           </select>
         </div>
 
         <div class="config-toggle-item">
           <div>
             <h4>GF Mode (Sweet Talk)</h4>
-            <p>Romantic and caring voice replies</p>
+            <p>Romantic and caring responses</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="gf-mode-toggle">
@@ -616,7 +573,7 @@
         <div class="config-toggle-item">
           <div>
             <h4>Auto Continuous Listen</h4>
-            <p>Automatically re-opens mic after speaking</p>
+            <p>Re-opens mic after replying</p>
           </div>
           <label class="switch">
             <input type="checkbox" id="auto-listen-toggle">
@@ -626,7 +583,7 @@
 
         <div class="config-card about-card">
           <h4><i class="fa-solid fa-circle-info"></i> About Jarvis Assistant</h4>
-          <p>Ise <strong>Shivam Gupta</strong> ne <code>index.html</code>, <code>style.css</code> aur <code>script.js</code> se banaya hai. Yeh Android ke liye ek advanced AI assistant hai.</p>
+          <p>Ise <strong>Shivam Gupta</strong> ne <code>index.html</code> se banaya hai. Yeh Android ke liye ek advanced AI assistant hai jo voice control, calling, YouTube music search aur smart replies provide karta hai.</p>
         </div>
 
         <button class="save-settings-btn" id="save-config">SAVE CONFIGURATION</button>
@@ -655,7 +612,6 @@
     const statusHeader = document.getElementById("jarvis-status-header");
     const systemSubtitle = document.getElementById("system-subtitle");
     const reactorWrapper = document.querySelector(".reactor-wrapper");
-    const ytContainer = document.getElementById("yt-player-container");
 
     const settingsModal = document.getElementById("settings-modal");
     const openSettingsBtn = document.getElementById("open-settings-btn");
@@ -667,38 +623,67 @@
     const autoListenToggle = document.getElementById("auto-listen-toggle");
     const saveConfigBtn = document.getElementById("save-config");
 
-    // Loader
-    window.addEventListener("load", () => {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 15) + 5;
-        if (progress >= 100) {
-          progress = 100;
-          progressFill.style.width = "100%";
-          clearInterval(interval);
+    // Fast Auto Loader Transition (Instant for GitHub)
+    let progress = 0;
+    const loadTimer = setInterval(() => {
+      progress += 10;
+      if (progressFill) progressFill.style.width = progress + "%";
+      if (progress >= 100) {
+        clearInterval(loadTimer);
+        setTimeout(() => {
+          if (loaderScreen) loaderScreen.style.opacity = "0";
           setTimeout(() => {
-            loaderScreen.style.opacity = "0";
-            setTimeout(() => {
-              loaderScreen.classList.add("hidden");
-              appContainer.classList.remove("hidden");
-              speakResponse("Hello Shivam Boss, all systems online.");
-            }, 400);
+            if (loaderScreen) loaderScreen.classList.add("hidden");
+            if (appContainer) appContainer.classList.remove("hidden");
           }, 300);
-        } else {
-          progressFill.style.width = progress + "%";
-        }
-      }, 60);
-    });
+        }, 150);
+      }
+    }, 60);
 
-    // Clock
+    // Clock & Date
     function updateClock() {
       const now = new Date();
-      liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
-      liveDate.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+      if (liveTime) liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+      if (liveDate) {
+        liveDate.innerText = now.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+      }
     }
     setInterval(updateClock, 1000);
     updateClock();
 
     if (navigator.getBattery) {
       navigator.getBattery().then(b => {
-        const updateB = () => batteryLevel.innerText =
+        const updateB = () => {
+          if (batteryLevel) batteryLevel.innerText = `${Math.round(b.level * 100)}%`;
+        };
+        updateB();
+        b.addEventListener('levelchange', updateB);
+      });
+    }
+
+    // Speech Recognition
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    if (SpeechRec) {
+      recognition = new SpeechRec();
+      recognition.lang = "hi-IN";
+      recognition.continuous = false;
+
+      recognition.onstart = () => {
+        if (micTriggerBtn) micTriggerBtn.classList.add("listening");
+        if (btnText) btnText.innerText = "LISTENING...";
+        if (statusHeader) statusHeader.innerText = "JARVIS LISTENING";
+        if (systemSubtitle) systemSubtitle.innerText = "Listening to your voice...";
+      };
+
+      recognition.onresult = async (e) => {
+        if (micTriggerBtn) micTriggerBtn.classList.remove("listening");
+        if (btnText) btnText.innerText = "WAKE UP & TALK";
+        const transcript = e.results[0][0].transcript.trim();
+       
