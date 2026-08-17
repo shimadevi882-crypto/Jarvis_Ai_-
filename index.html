@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>JARVIS AI - Shivam Gupta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-green: #00ff88;
+      --glow-green: rgba(0, 255, 136, 0.4);
+      --dark-bg: #040d0a;
+      --card-bg: rgba(6, 26, 18, 0.88);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Rajdhani', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #08241a 0%, var(--dark-bg) 100%);
+      color: var(--primary-green);
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 1. HOLOGRAM LOADER */
+    #loader-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--dark-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.6s ease;
+    }
+
+    .loader-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .hologram-spinner {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .holo-ring {
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .holo-ring.r1 {
+      width: 95px;
+      height: 95px;
+      border: 3px dashed var(--primary-green);
+      animation: rotateOuter 3s linear infinite;
+    }
+
+    .holo-ring.r2 {
+      width: 65px;
+      height: 65px;
+      border: 2px solid transparent;
+      border-top: 3px solid var(--primary-green);
+      border-bottom: 3px solid var(--primary-green);
+      animation: rotateOuter 1.5s reverse linear infinite;
+    }
+
+    .holo-core {
+      width: 25px;
+      height: 25px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 25px var(--primary-green);
+      animation: breathe 1s infinite alternate;
+    }
+
+    .glow-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px var(--primary-green);
+    }
+
+    .sub-loader {
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      opacity: 0.8;
+    }
+
+    .progress-bar-container {
+      width: 240px;
+      height: 6px;
+      background: rgba(0, 255, 136, 0.15);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--primary-green);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--primary-green);
+      box-shadow: 0 0 12px var(--primary-green);
+      transition: width 0.1s linear;
+    }
+
+    .created-tag {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      letter-spacing: 2px;
+    }
+
+    /* 2. MAIN APP CONTAINER */
+    #app {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      padding: 15px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .battery-status {
+      font-size: 1rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .glow-icon {
+      margin-right: 5px;
+      text-shadow: 0 0 8px var(--primary-green);
+    }
+
+    .main-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 4px;
+      text-shadow: 0 0 10px var(--primary-green);
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      color: var(--primary-green);
+      font-size: 1.3rem;
+      cursor: pointer;
+      animation: spin 12s linear infinite;
+    }
+
+    .time-date-container {
+      text-align: center;
+      margin-top: -10px;
+    }
+
+    #live-time {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 3px;
+    }
+
+    #live-date {
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    /* 3. ARC REACTOR */
+    .reactor-wrapper {
+      position: relative;
+      width: 210px;
+      height: 210px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .outer-dashed-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px dashed var(--primary-green);
+      box-shadow: 0 0 20px var(--glow-green);
+      animation: rotateOuter 20s linear infinite;
+    }
+
+    .node {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #ffffff;
+    }
+
+    .n1 { top: 0; left: 50%; transform: translateX(-50%); }
+    .n2 { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .n3 { left: 0; top: 50%; transform: translateY(-50%); }
+    .n4 { right: 0; top: 50%; transform: translateY(-50%); }
+
+    .middle-pulsing-ring {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 2px solid var(--primary-green);
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+      animation: breathe 3s infinite ease-in-out;
+    }
+
+    .inner-glowing-core {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--primary-green) 60%, transparent 100%);
+      box-shadow: 0 0 35px var(--primary-green);
+      transition: transform 0.2s ease;
+    }
+
+    .speaking-reactor .inner-glowing-core {
+      animation: reactorZoom 0.35s ease-in-out infinite alternate !important;
+    }
+
+    .speaking-reactor .outer-dashed-ring {
+      animation: rotateFast 2s linear infinite !important;
+    }
+
+    #jarvis-status-header {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      text-shadow: 0 0 8px var(--primary-green);
+    }
+
+    /* 4. TEXT & ACTIONS */
+    .response-box {
+      width: 100%;
+      max-height: 85px;
+      background: rgba(0, 20, 12, 0.65);
+      border-left: 3px solid var(--primary-green);
+      padding: 8px 12px;
+      border-radius: 4px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .jarvis-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      display: block;
+    }
+
+    #system-subtitle {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #c9fce2;
+      margin-top: 4px;
+      line-height: 1.3;
+    }
+
+    #yt-player-container {
+      width: 100%;
+      margin: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .action-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .action-card iframe {
+      width: 100%;
+      height: 140px;
+      border-radius: 10px;
+      border: 1px solid var(--primary-green);
+      box-shadow: 0 0 15px var(--glow-green);
+    }
+
+    .launch-btn {
+      width: 100%;
+      padding: 10px;
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid var(--primary-green);
+      border-radius: 8px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wa-btn {
+      background: rgba(37, 211, 102, 0.2);
+      border-color: #25d366;
+      color: #25d366;
+    }
+
+    .call-btn {
+      background: rgba(0, 195, 255, 0.2);
+      border-color: #00c3ff;
+      color: #00c3ff;
+    }
+
+    /* 5. ACTION FOOTER */
+    .action-footer {
+      width: 100%;
+    }
+
+    .glow-pill-button {
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: 2px solid var(--primary-green);
+      border-radius: 40px;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 15px var(--glow-green);
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .glow-pill-button.listening {
+      background: rgba(0, 255, 136, 0.25);
+      border-color: #ffffff;
+      box-shadow: 0 0 30px var(--primary-green);
+      animation: buttonPulse 1s infinite alternate;
+    }
+
+    /* 6. SETTINGS MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 440px;
+      height: 80vh;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-top: 2px solid var(--primary-green);
+      border-radius: 24px 24px 0 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .modal-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+    }
+
+    .modal-header button {
+      background: none;
+      border: none;
+      color: var(--primary-green);
+      font-size: 1.4rem;
+    }
+
+    .modal-scroll-body {
+      overflow-y: auto;
+      padding: 15px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .config-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .dev-card, .about-card {
+      padding: 12px;
+      background: rgba(0, 255, 136, 0.08);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .dev-card {
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .about-card p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      background: #020b07;
+      border: 1px solid var(--primary-green);
+      color: #fff;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .config-toggle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .config-toggle-item h4 { font-size: 0.95rem; }
+    .config-toggle-item p { font-size: 0.8rem; opacity: 0.7; }
+
+    .switch { position: relative; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background: #333; border-radius: 24px; transition: .3s; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
+    input:checked + .slider { background: var(--primary-green); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .save-settings-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary-green);
+      border: none;
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes rotateOuter { 100% { transform: rotate(360deg); } }
+    @keyframes rotateFast { 100% { transform: rotate(1080deg); } }
+    @keyframes breathe { 0%, 100% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 1; } }
+    @keyframes reactorZoom { 0% { transform: scale(0.9); box-shadow: 0 0 20px var(--primary-green); } 100% { transform: scale(1.25); box-shadow: 0 0 50px #ffffff; } }
+    @keyframes buttonPulse { 0% { box-shadow: 0 0 10px var(--primary-green); } 100% { box-shadow: 0 0 35px #ffffff; } }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader-screen">
+    <div class="loader-content">
+      <div class="hologram-spinner">
+        <div class="holo-ring r1"></div>
+        <div class="holo-ring r2"></div>
+        <div class="holo-core"></div>
+      </div>
+      <h2 class="glow-text">JARVIS AI SYSTEM</h2>
+      <p class="sub-loader">INITIALIZING NEURAL NETWORK</p>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-fill"></div>
+      </div>
+      <span class="created-tag">Created by Shivam Gupta</span>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="hidden">
+    <div class="top-bar">
+      <div class="battery-status">
+        <i class="fa-solid fa-bolt glow-icon"></i>
+        <span id="battery-level">--%</span>
+      </div>
+      <h1 class="main-title">JARVIS AI</h1>
+      <button class="settings-btn" id="open-settings-btn">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+
+    <div class="time-date-container">
+      <h2 id="live-time">--:--:--</h2>
+      <p id="live-date">Loading date...</p>
+    </div>
+
+    <div class="reactor-wrapper">
+      <div class="outer-dashed-ring" id="outer-ring">
+        <span class="node n1"></span>
+        <span class="node n2"></span>
+        <span class="node n3"></span>
+        <span class="node n4"></span>
+      </div>
+      <div class="middle-pulsing-ring" id="middle-ring"></div>
+      <div class="inner-glowing-core" id="core-glow"></div>
+    </div>
+
+    <h3 id="jarvis-status-header">JARVIS STANDBY</h3>
+
+    <div class="response-box">
+      <span class="jarvis-tag">JARVIS CORE</span>
+      <p id="system-subtitle">System initialized. Tap button or speak to begin.</p>
+    </div>
+
+    <div id="yt-player-container"></div>
+
+    <div class="action-footer">
+      <button id="voice-trigger-btn" class="glow-pill-button">
+        <i class="fa-solid fa-microphone-lines" id="mic-icon"></i>
+        <span id="btn-text">WAKE UP & TALK</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>SYSTEM CONFIGURATION</h3>
+        <button id="close-settings-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-scroll-body">
+        <div class="config-card dev-card">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <h4>System Architect</h4>
+            <p>Created by Gupta Shivam</p>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <label><i class="fa-solid fa-brain"></i> Groq AI API Key</label>
+          <input type="password" id="groq-api-key" placeholder="gsk_xxxxxxxxxxxxxxx">
+        </div>
+
+        <div class="config-card">
+          <label><i class="fa-brands fa-youtube"></i> YouTube Data v3 API Key</label>
+          <input type="password" id="yt-api-key" placeholder="AIzaSyxxxxxxxxxxxxxxx">
+        </div>
+
+        <div class="config-card">
+          <label><i class="fa-solid fa-user-gear"></i> Voice Gender</label>
+          <select id="voice-gender-select">
+            <option value="female">Friday (Realistic Female Voice)</option>
+            <option value="male">Jarvis (Core Male Voice)</option>
+          </select>
+        </div>
+
+        <div class="config-toggle-item">
+          <div>
+            <h4>GF Mode (Sweet Talk)</h4>
+            <p>Romantic and caring voice replies</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="gf-mode-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="config-toggle-item">
+          <div>
+            <h4>Auto Continuous Listen</h4>
+            <p>Automatically re-opens mic after speaking</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="auto-listen-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="config-card about-card">
+          <h4><i class="fa-solid fa-circle-info"></i> About Jarvis Assistant</h4>
+          <p>Ise <strong>Shivam Gupta</strong> ne <code>index.html</code>, <code>style.css</code> aur <code>script.js</code> se banaya hai. Yeh Android ke liye ek advanced AI assistant hai.</p>
+        </div>
+
+        <button class="save-settings-btn" id="save-config">SAVE CONFIGURATION</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let CONFIG = {
+      groqKey: localStorage.getItem("jarvis_groq_key") || "",
+      ytKey: localStorage.getItem("jarvis_yt_key") || "",
+      voiceGender: localStorage.getItem("jarvis_voice") || "female",
+      gfMode: localStorage.getItem("jarvis_gf_mode") === "true",
+      autoListen: localStorage.getItem("jarvis_auto_listen") === "true"
+    };
+
+    const loaderScreen = document.getElementById("loader-screen");
+    const progressFill = document.getElementById("progress-fill");
+    const appContainer = document.getElementById("app");
+    const liveTime = document.getElementById("live-time");
+    const liveDate = document.getElementById("live-date");
+    const batteryLevel = document.getElementById("battery-level");
+    const micTriggerBtn = document.getElementById("voice-trigger-btn");
+    const btnText = document.getElementById("btn-text");
+    const statusHeader = document.getElementById("jarvis-status-header");
+    const systemSubtitle = document.getElementById("system-subtitle");
+    const reactorWrapper = document.querySelector(".reactor-wrapper");
+    const ytContainer = document.getElementById("yt-player-container");
+
+    const settingsModal = document.getElementById("settings-modal");
+    const openSettingsBtn = document.getElementById("open-settings-btn");
+    const closeSettingsBtn = document.getElementById("close-settings-btn");
+    const groqKeyInput = document.getElementById("groq-api-key");
+    const ytKeyInput = document.getElementById("yt-api-key");
+    const voiceGenderSelect = document.getElementById("voice-gender-select");
+    const gfModeToggle = document.getElementById("gf-mode-toggle");
+    const autoListenToggle = document.getElementById("auto-listen-toggle");
+    const saveConfigBtn = document.getElementById("save-config");
+
+    // Loader
+    window.addEventListener("load", () => {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress >= 100) {
+          progress = 100;
+          progressFill.style.width = "100%";
+          clearInterval(interval);
+          setTimeout(() => {
+            loaderScreen.style.opacity = "0";
+            setTimeout(() => {
+              loaderScreen.classList.add("hidden");
+              appContainer.classList.remove("hidden");
+              speakResponse("Hello Shivam Boss, all systems online.");
+            }, 400);
+          }, 300);
+        } else {
+          progressFill.style.width = progress + "%";
+        }
+      }, 60);
+    });
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      liveTime.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+      liveDate.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    if (navigator.getBattery) {
+      navigator.getBattery().then(b => {
+        const updateB = () => batteryLevel.innerText =
